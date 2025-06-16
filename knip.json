@@ -1,10 +1,6 @@
 {
-  "ignore": [
-    "src/components/ui/*",
-    "*.config.{js,ts}",
-    "src/lib/server-url.ts"
-  ],
-  "paths": {
-    "@/*": ["./src/*"]
-  }
+	"ignore": ["src/components/ui/*", "*.config.{js,ts}", "src/lib/server-url.ts"],
+	"paths": {
+		"@/*": ["./src/*"]
+	}
 }

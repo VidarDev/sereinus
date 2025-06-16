@@ -1,0 +1,10 @@
+node_modules
+.idea
+.vscode
+.next
+
+build
+public
+pnpm-lock.yaml
+
+README.md

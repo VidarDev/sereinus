@@ -1,16 +1,74 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
+import pluginJs from "@eslint/js";
+import prettier from "eslint-config-prettier";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import globals from "globals";
+import { dirname } from "path";
+import tseslint from "typescript-eslint";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+	baseDirectory: __dirname
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+	pluginJs.configs.recommended,
+	{
+		files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+		languageOptions: {
+			parser: "@typescript-eslint/parser",
+			parserOptions: {
+				project: "tsconfig.json",
+				sourceType: "module",
+				ecmaFeatures: {
+					jsx: true
+				},
+				globals: {
+					...globals.browser
+				}
+			}
+		}
+	},
+	// Typescript
+	...tseslint.configs.strict,
+	...tseslint.configs.stylistic,
+	// Next
+	...compat.extends("next/core-web-vitals"),
+	// Simple Import Sort
+	{
+		plugins: {
+			"simple-import-sort": simpleImportSort
+		},
+		rules: {
+			"simple-import-sort/imports": "error",
+			"simple-import-sort/exports": "error"
+		}
+	},
+	// Prettier
+	{
+		rules: {
+			...prettier.rules,
+			"import/no-anonymous-default-export": "off"
+		}
+	},
+	// Ignore files
+	{
+		ignores: [
+			"zod",
+			"next-env.d.ts",
+			".next",
+			".vercel",
+			".vscode",
+			"**/worker.js",
+			"node_modules",
+			"dist",
+			"build",
+			"coverage"
+		]
+	}
 ];
 
 export default eslintConfig;
