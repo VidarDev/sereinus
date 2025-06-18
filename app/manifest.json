@@ -1,0 +1,14 @@
+{
+    "name": "Sereinus",
+    "short_name": "Sereinus",
+    "description": "Your friendly guider towards a peaceful state of mind.",
+    "start_url": "/",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "/globe.svg",
+            "sizes": "48x48",
+            "type": "image/svg"
+        }
+    ]
+}
