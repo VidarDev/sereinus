@@ -41,7 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-src/vue/generated
+src/main/infrastructure/generated
 
 # IDEs
 .idea

@@ -1,12 +1,12 @@
-import { LogIn } from "@/main/application/usecase/LogIn.usecase";
-import { AuthenticationController } from "@/main/presentation/controller/Authentication.controller";
+import { CrisisPrismaDao } from "@/main/infrastructure/dao/Crisis.prisma.dao";
+import { PrismaClient } from "@/main/infrastructure/generated/prisma";
 
 export const DI_SYMBOLS = {
-	AuthenticationController: Symbol.for("AuthenticationController"),
-	LogIn: Symbol.for("LogIn")
+	PrismaClient: Symbol.for("PrismaClient"),
+	CrisisPrismaDao: Symbol.for("CrisisPrismaDao")
 };
 
 export interface DiReturnTypes {
-	AuthenticationController: AuthenticationController;
-	LogIn: LogIn;
+	CrisisPrismaDao: CrisisPrismaDao;
+	PrismaClient: PrismaClient;
 }
