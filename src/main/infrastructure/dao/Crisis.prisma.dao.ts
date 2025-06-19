@@ -6,4 +6,14 @@ export class CrisisPrismaDao {
 	constructor(prisma: PrismaClient) {
 		this.prisma = prisma;
 	}
+
+	public async findAllByUserId(userId: string) {
+		const test = await this.prisma.crisis.findMany({
+			where: {
+				userId: userId
+			}
+		});
+
+		return test;
+	}
 }
