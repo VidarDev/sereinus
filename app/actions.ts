@@ -1,8 +1,8 @@
 "use server";
 
-import { getInjection } from "../di/container";
-
 import webpush from "web-push";
+
+import { getInjection } from "@/di/container";
 
 export const login = async (username: string, password: string) => {
 	const authenticationController = getInjection("AuthenticationController");
@@ -15,7 +15,7 @@ const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 const privateKey = process.env.VAPID_PRIVATE_KEY;
 
 if (!publicKey || !privateKey) {
-	throw new Error("Les clés VAPID ne sont pas configurées dans les variables d'environnement");
+	throw new Error("VAPID keys are not configured in the environment variables");
 }
 
 webpush.setVapidDetails("mailto:your-email@example.com", publicKey, privateKey);

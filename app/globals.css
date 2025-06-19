@@ -36,12 +36,15 @@
 	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
 	--sidebar-border: oklch(0.92 0.004 286.32);
 	--sidebar-ring: oklch(0.705 0.015 286.067);
+	--theme-primary: #f7c2ff;
+	--theme-color: #f7c2ff;
+	--theme-background: #2d0036;
 }
 
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
+	--font-sans: var(--font-montserrat-sans);
 	--font-mono: var(--font-geist-mono);
 	--color-sidebar-ring: var(--sidebar-ring);
 	--color-sidebar-border: var(--sidebar-border);
@@ -88,7 +91,7 @@
 body {
 	background: var(--background);
 	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: var(--font-montserrat-sans);
 }
 
 .dark {
@@ -131,5 +134,35 @@ body {
 	}
 	body {
 		@apply bg-background text-foreground;
+		background-color: var(--theme-background);
+	}
+}
+
+@import "tailwindcss/preflight";
+@tailwind utilities;
+
+@layer utilities {
+	.bg-theme-primary {
+		background-color: var(--theme-primary);
+	}
+
+	.bg-theme-color {
+		background-color: var(--theme-color);
+	}
+
+	.bg-theme-background {
+		background-color: var(--theme-background);
+	}
+
+	.text-theme-primary {
+		color: var(--theme-primary);
+	}
+
+	.text-theme-color {
+		color: var(--theme-color);
+	}
+
+	.border-theme-primary {
+		border-color: var(--theme-primary);
 	}
 }

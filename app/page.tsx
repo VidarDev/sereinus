@@ -1,19 +1,26 @@
 "use client";
 
-import { login } from "./actions";
+import { toast } from "sonner";
 
+import { login } from "@/app/actions";
 import { logger } from "@/vue/lib/logger";
-import { getCurrentPWAConfig } from "@/vue/lib/pwa-config";
 
 export default function Home() {
 	const handleLogin = async () => {
 		const data = await login("testuser", "testpassword");
-		console.log("Login data:", data);
+		logger.debug("Login data:", data);
+		toast.success("Login data:", {
+			description: JSON.stringify(data)
+		});
 	};
 
-	const pwaConfig = getCurrentPWAConfig();
+	return (
+		<div className="space-y-6">
+			<h1 className="text-2xl font-bold">Sereinus - Test PWA</h1>
 
-	logger.debug(pwaConfig);
-
-	return <button onClick={handleLogin}>Click on me</button>;
+			<button onClick={handleLogin} className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+				Test IoC Login
+			</button>
+		</div>
+	);
 }
