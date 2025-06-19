@@ -4,7 +4,7 @@ self.addEventListener('push', function (event) {
     const options = {
       body: data.body,
       icon: data.icon || '/icon.png',
-      badge: '/badge.png',
+      badge: '/icon.png',
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
@@ -14,7 +14,7 @@ self.addEventListener('push', function (event) {
     event.waitUntil(self.registration.showNotification(data.title, options))
   }
 })
- 
+
 self.addEventListener('notificationclick', function (event) {
   console.log('Notification click received.');
   event.notification.close();
@@ -29,7 +29,7 @@ self.addEventListener('notificationclick', function (event) {
           client.navigate(targetUrl);
           return client.focus();
         }
-      }
+      } 
       if (clients.openWindow) {
         return clients.openWindow(targetUrl);
       }
