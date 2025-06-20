@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat } from "next/font/google";
 
 import { Toaster } from "@/vue/components/toaster";
+import { ServiceWorkerRegistration } from "@/vue/components/utils/service-worker-registration";
 import { ThemeScript } from "@/vue/components/utils/theme-script";
 import { ThemeProvider } from "@/vue/providers/theme.provider";
 import { SiteConfig } from "@/vue/site-config";
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 	title: SiteConfig.title,
 	description: SiteConfig.description,
 	applicationName: SiteConfig.short_name,
-	manifest: "/manifest.json"
+	manifest: "/manifest.webmanifest"
 };
 
 export const viewport: Viewport = {
@@ -49,6 +50,7 @@ export default function RootLayout({
 				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative min-h-[100dvh] antialiased`}
 			>
 				<ThemeProvider>
+					<ServiceWorkerRegistration />
 					<Toaster />
 					<main className="p-4">{children}</main>
 				</ThemeProvider>
