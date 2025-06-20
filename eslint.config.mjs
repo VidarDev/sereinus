@@ -65,7 +65,6 @@ const eslintConfig = [
 			"dist",
 			"build",
 			"coverage",
-			"src/generated"
 		]
 	}
 ];

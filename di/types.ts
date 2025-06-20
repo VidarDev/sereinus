@@ -1,12 +1,15 @@
 import { CrisisPrismaDao } from "@/main/infrastructure/dao/Crisis.prisma.dao";
-import { PrismaClient } from "@/main/infrastructure/generated/prisma";
+import { PrismaClient } from "@prisma/client";
+import { CrisisRepository } from "@/main/application/port/Crisis.repository.interface";
 
 export const DI_SYMBOLS = {
 	PrismaClient: Symbol.for("PrismaClient"),
-	CrisisPrismaDao: Symbol.for("CrisisPrismaDao")
+	CrisisPrismaDao: Symbol.for("CrisisPrismaDao"),
+	CrisisRepository: Symbol.for("CrisisRepository")
 };
 
 export interface DiReturnTypes {
-	CrisisPrismaDao: CrisisPrismaDao;
 	PrismaClient: PrismaClient;
+	CrisisPrismaDao: CrisisPrismaDao;
+	CrisisRepository: CrisisRepository;
 }
