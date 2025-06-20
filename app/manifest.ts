@@ -13,6 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
 		short_name: SiteConfig.short_name,
 		description: SiteConfig.description,
 		categories: SiteConfig.categories,
+		prefer_related_applications: false,
+		scope: "/",
 		icons: [
 			{
 				"src": "/web-app-manifest-192x192.png",
@@ -25,6 +27,18 @@ export default function manifest(): MetadataRoute.Manifest {
 				"sizes": "512x512",
 				"type": "image/png",
 				"purpose": "maskable"
+			},
+			{
+				"src": "/icon.png",
+				"sizes": "256x256",
+				"type": "image/png",
+				"purpose": "any"
+			},
+			{
+				"src": "/apple-touch-icon.png",
+				"sizes": "180x180",
+				"type": "image/png",
+				"purpose": "any"
 			}
 		]
 	};
