@@ -62,8 +62,7 @@ const eslintConfig = [
 			"node_modules",
 			"dist",
 			"build",
-			"coverage",
-			"src/generated"
+			"coverage"
 		]
 	}
 ];
