@@ -30,4 +30,18 @@ export class CrisisPrismaDao {
 			}
 		});
 	}
+
+	public async update(crisis: CrisisDTO): Promise<void> {
+		await this.prisma.crisis.update({
+			where: {
+				userId_datetime: {
+					userId: crisis.userId,
+					datetime: crisis.datetime
+				}
+			},
+			data: {
+				note: crisis.note
+			}
+		});
+	}
 }

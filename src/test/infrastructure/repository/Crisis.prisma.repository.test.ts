@@ -63,45 +63,90 @@ describe("Crisis Prisma Repository", () => {
 	});
 
 	describe("Given a user id and a crisis", () => {
-		test("when it does not exist, then it is saved", async () => {
-			// Given
-			const userId = "3";
-			const crisis = new Crisis(new Date(2025, 0, 3, 0, 0, 0), 45);
+		describe("when saving a crisis", () => {
+			test("and it does not exist, then it is saved", async () => {
+				// Given
+				const userId = "3";
+				const crisis = new Crisis(new Date(2025, 0, 3, 0, 0, 0), 45);
 
-			// When & Then
-			await expect(crisisPrismaRepository.save(userId, crisis)).resolves.not.toThrow();
+				// When & Then
+				await expect(crisisPrismaRepository.save(userId, crisis)).resolves.not.toThrow();
+			});
+
+			test("and it already exists, then an error is thrown", async () => {
+				// Given
+				const userId = "1";
+				const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis");
+
+				// When & Then
+				await expect(crisisPrismaRepository.save(userId, crisis)).rejects.toThrow(
+					"Un enregistrement existe déjà pour cette date."
+				);
+			});
+
+			test("and it fails, then an error is thrown", async () => {
+				// Given
+				const prismaClientMock: jest.Mocked<PrismaClient> = {
+					crisis: {
+						// @ts-ignore
+						save: jest.fn().mockRejectedValue(new Error("Database error"))
+					}
+				};
+
+				const mockedDao = new CrisisPrismaDao(prismaClientMock);
+				crisisPrismaRepository = new CrisisPrismaRepository(mockedDao);
+
+				const userId = "1";
+				const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis");
+
+				// When & Then
+				await expect(crisisPrismaRepository.save(userId, crisis)).rejects.toThrow(
+					"Une erreur est survenue lors de la sauvegarde."
+				);
+			});
 		});
 
-		test("when it already exists, then an error is thrown", async () => {
-			// Given
-			const userId = "1";
-			const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis");
+		describe("when updating a crisis", () => {
+			test("and it exists, then it is updated", async () => {
+				// Given
+				const userId = "1";
+				const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "Updated crisis");
 
-			// When & Then
-			await expect(crisisPrismaRepository.save(userId, crisis)).rejects.toThrow(
-				"Un enregistrement existe déjà pour cette date."
-			);
-		});
+				// When & Then
+				await expect(crisisPrismaRepository.update(userId, crisis)).resolves.not.toThrow();
+			});
 
-		test("when saving fails, then an error is thrown", async () => {
-			// Given
-			let prismaClientMock: jest.Mocked<PrismaClient> = {
-				crisis: {
-					// @ts-ignore
-					save: jest.fn().mockRejectedValue(new Error("Database error"))
-				}
-			};
+			test("and it does not exist, then an error is thrown", async () => {
+				// Given
+				const userId = "2";
+				const crisis = new Crisis(new Date(2025, 0, 4, 0, 0, 0), 45, "Non-existing crisis");
 
-			const mockedDao = new CrisisPrismaDao(prismaClientMock);
+				// When & Then
+				await expect(crisisPrismaRepository.update(userId, crisis)).rejects.toThrow(
+					"Cet enregistrement n'existe pas."
+				);
+			});
 
-			crisisPrismaRepository = new CrisisPrismaRepository(mockedDao);
-			const userId = "1";
-			const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis");
+			test("and it fails, then an error is thrown", async () => {
+				// Given
+				const prismaClientMock: jest.Mocked<PrismaClient> = {
+					crisis: {
+						// @ts-ignore
+						update: jest.fn().mockRejectedValue(new Error("Database error"))
+					}
+				};
 
-			// When & Then
-			await expect(crisisPrismaRepository.save(userId, crisis)).rejects.toThrow(
-				"Une erreur est survenue lors de la sauvegarde."
-			);
+				const mockedDao = new CrisisPrismaDao(prismaClientMock);
+				crisisPrismaRepository = new CrisisPrismaRepository(mockedDao);
+
+				const userId = "1";
+				const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis");
+
+				// When & Then
+				await expect(crisisPrismaRepository.update(userId, crisis)).rejects.toThrow(
+					"Une erreur est survenue lors de la mise à jour."
+				);
+			});
 		});
 	});
 });
