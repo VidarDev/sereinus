@@ -19,9 +19,7 @@ const eslintConfig = [
 	{
 		files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
 		languageOptions: {
-			globals: {
-				...globals
-			},
+			globals: globals.globals,
 			parser: "@typescript-eslint/parser",
 			parserOptions: {
 				ecmaFeatures: { jsx: true },
@@ -64,7 +62,7 @@ const eslintConfig = [
 			"node_modules",
 			"dist",
 			"build",
-			"coverage",
+			"coverage"
 		]
 	}
 ];

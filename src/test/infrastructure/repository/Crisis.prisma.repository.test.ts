@@ -1,11 +1,13 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, jest, test } from "@jest/globals";
-import { getInjection } from "../../../../di/container";
+import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
-import { setupTestDatabase, teardownTestDatabase } from "@/test/helper/prismaHelper";
-import { CrisisPrismaRepository } from "@/main/infrastructure/repository/Crisis.prisma.repository";
+
 import { Crisis } from "@/main/domain/Crisis";
 import { CrisisPrismaDao } from "@/main/infrastructure/dao/Crisis.prisma.dao";
-import { PrismaClient } from "@prisma/client";
+import { CrisisPrismaRepository } from "@/main/infrastructure/repository/Crisis.prisma.repository";
+import { setupTestDatabase, teardownTestDatabase } from "@/test/helper/prismaHelper";
+
+import { getInjection } from "../../../../di/container";
 
 describe("Crisis Prisma Repository", () => {
 	let crisisPrismaRepository: CrisisPrismaRepository;
@@ -43,9 +45,9 @@ describe("Crisis Prisma Repository", () => {
 
 		test("when an error occured, then an error is thrown", async () => {
 			// Given
-			let prismaClientMock: jest.Mocked<PrismaClient> = {
+			const prismaClientMock: jest.Mocked<PrismaClient> = {
 				crisis: {
-					// @ts-ignore
+					// @ts-expect-error typescript does not recognize the mock
 					findMany: jest.fn().mockRejectedValue(new Error("Database error"))
 				}
 			};
@@ -88,7 +90,7 @@ describe("Crisis Prisma Repository", () => {
 				// Given
 				const prismaClientMock: jest.Mocked<PrismaClient> = {
 					crisis: {
-						// @ts-ignore
+						// @ts-expect-error typescript does not recognize the mock
 						save: jest.fn().mockRejectedValue(new Error("Database error"))
 					}
 				};
@@ -131,7 +133,7 @@ describe("Crisis Prisma Repository", () => {
 				// Given
 				const prismaClientMock: jest.Mocked<PrismaClient> = {
 					crisis: {
-						// @ts-ignore
+						// @ts-expect-error typescript does not recognize the mock
 						update: jest.fn().mockRejectedValue(new Error("Database error"))
 					}
 				};

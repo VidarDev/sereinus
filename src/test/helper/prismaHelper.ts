@@ -1,6 +1,7 @@
 import { execSync } from "child_process";
-import { getInjection } from "../../../di/container";
 import { Client } from "pg";
+
+import { getInjection } from "../../../di/container";
 
 const waitForPostgres = async (retries = 10, delay = 250) => {
 	for (let i = 0; i < retries; i++) {
@@ -10,7 +11,8 @@ const waitForPostgres = async (retries = 10, delay = 250) => {
 			await client.end();
 
 			return;
-		} catch (err) {
+		} catch {
+			console.error("Retrying...");
 			await new Promise((res) => setTimeout(res, delay));
 		}
 	}
