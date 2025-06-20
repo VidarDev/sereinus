@@ -59,11 +59,12 @@ const eslintConfig = [
 			".vercel",
 			".vscode",
 			"**/worker.js",
+			"**/sw.js",
 			"node_modules",
 			"dist",
 			"build",
 			"coverage",
-			"src/generated"
+			"src/vue/generated"
 		]
 	}
 ];
