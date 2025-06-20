@@ -5,12 +5,11 @@ import { toast } from "sonner";
 import { login } from "@/app/actions";
 import { ThemeSwitcher } from "@/vue/components/theme-switcher";
 import { Button } from "@/vue/components/ui/button";
-import { logger } from "@/vue/lib/logger";
 
 export default function Home() {
 	const handleLogin = async () => {
 		const data = await login("testuser", "testpassword");
-		logger.debug("Login data:", data);
+		console.log("Login data:", data);
 		toast.success("Login data:", {
 			description: JSON.stringify(data)
 		});
