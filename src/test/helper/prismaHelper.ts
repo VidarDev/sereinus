@@ -34,10 +34,12 @@ export const setupTestDatabase = async () => {
 			{
 				userId: "1",
 				datetime: new Date(2025, 0, 1, 0, 0, 0),
+				duration: 45,
 				note: "First crisis"
 			},
 			{
 				userId: "1",
+				duration: 45,
 				datetime: new Date(2025, 0, 2, 0, 0, 0)
 			}
 		]

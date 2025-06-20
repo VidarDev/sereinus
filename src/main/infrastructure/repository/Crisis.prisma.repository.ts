@@ -25,13 +25,13 @@ export class CrisisPrismaRepository implements CrisisRepository {
 
 	private mapAllToCrisis(crisisDTOs: CrisisDTO[]): Crisis[] {
 		return crisisDTOs.map((crisisDTO: CrisisDTO) => {
-			return new Crisis(crisisDTO.datetime, crisisDTO.note);
+			return new Crisis(crisisDTO.datetime, crisisDTO.duration, crisisDTO.note);
 		});
 	}
 
 	public async save(userId: string, crisis: Crisis): Promise<void> {
 		try {
-			const crisisDTO = new CrisisDTO(userId, crisis.datetime, crisis.note);
+			const crisisDTO = new CrisisDTO(userId, crisis.datetime, crisis.duration, crisis.note);
 
 			await this.crisisPrismaDao.save(crisisDTO);
 		} catch (error) {

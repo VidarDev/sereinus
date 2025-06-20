@@ -34,8 +34,8 @@ describe("Crisis Prisma Repository", () => {
 
 			// Then
 			const expectedCrisis: Crisis[] = [
-				new Crisis(new Date(2025, 0, 1, 0, 0, 0), "First crisis"),
-				new Crisis(new Date(2025, 0, 2, 0, 0, 0))
+				new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis"),
+				new Crisis(new Date(2025, 0, 2, 0, 0, 0), 45)
 			];
 
 			expect(actualCrisis).toEqual(expectedCrisis);
@@ -66,7 +66,7 @@ describe("Crisis Prisma Repository", () => {
 		test("when it does not exist, then it is saved", async () => {
 			// Given
 			const userId = "3";
-			const crisis = new Crisis(new Date(2025, 0, 3, 0, 0, 0));
+			const crisis = new Crisis(new Date(2025, 0, 3, 0, 0, 0), 45);
 
 			// When & Then
 			await expect(crisisPrismaRepository.save(userId, crisis)).resolves.not.toThrow();
@@ -75,7 +75,7 @@ describe("Crisis Prisma Repository", () => {
 		test("when it already exists, then an error is thrown", async () => {
 			// Given
 			const userId = "1";
-			const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), "First crisis");
+			const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis");
 
 			// When & Then
 			await expect(crisisPrismaRepository.save(userId, crisis)).rejects.toThrow(
@@ -96,7 +96,7 @@ describe("Crisis Prisma Repository", () => {
 
 			crisisPrismaRepository = new CrisisPrismaRepository(mockedDao);
 			const userId = "1";
-			const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), "First crisis");
+			const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis");
 
 			// When & Then
 			await expect(crisisPrismaRepository.save(userId, crisis)).rejects.toThrow(

@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { CrisisDTO } from "@/main/infrastructure/dto/CrisisDTO";
+import { PrismaClient } from "@prisma/client";
 
 export class CrisisPrismaDao {
 	private readonly prisma: PrismaClient;
@@ -16,7 +16,7 @@ export class CrisisPrismaDao {
 		});
 
 		return data.map((crisis) => {
-			return new CrisisDTO(crisis.userId, crisis.datetime, crisis.note ?? undefined);
+			return new CrisisDTO(crisis.userId, crisis.datetime, crisis.duration, crisis.note ?? undefined);
 		});
 	}
 
@@ -25,6 +25,7 @@ export class CrisisPrismaDao {
 			data: {
 				userId: crisis.userId,
 				datetime: crisis.datetime,
+				duration: crisis.duration,
 				note: crisis.note
 			}
 		});

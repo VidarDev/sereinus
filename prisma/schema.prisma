@@ -17,6 +17,7 @@ datasource db {
 model Crisis {
     userId   String
     datetime DateTime
+    duration Int
     note     String?
 
     @@id([userId, datetime])
