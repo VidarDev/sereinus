@@ -1,3 +1,5 @@
+import { THEME_PRESETS } from "./lib/theme/types";
+
 export const SiteConfig = {
 	title: "Sereinus",
 	short_name: "Sereinus",
@@ -8,8 +10,8 @@ export const SiteConfig = {
 	domain: "sereinus.vercel.app",
 	appIcon: "/icon-192x192.png",
 	brand: {
-		primary: "#f7c2ff",
-		theme_color: "#f7c2ff",
-		background_color: "#2d0036"
+		primary: THEME_PRESETS.default.primary,
+		theme_color: THEME_PRESETS.default.background_color,
+		background_color: THEME_PRESETS.default.background_color
 	}
 };

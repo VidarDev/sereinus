@@ -3,6 +3,8 @@
 import { toast } from "sonner";
 
 import { login } from "@/app/actions";
+import { ThemeSwitcher } from "@/vue/components/theme-switcher";
+import { Button } from "@/vue/components/ui/button";
 import { logger } from "@/vue/lib/logger";
 
 export default function Home() {
@@ -18,9 +20,9 @@ export default function Home() {
 		<div className="space-y-6">
 			<h1 className="text-2xl font-bold">Sereinus - Test PWA</h1>
 
-			<button onClick={handleLogin} className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
-				Test IoC Login
-			</button>
+			<Button onClick={handleLogin}>Test IoC Login</Button>
+
+			<ThemeSwitcher />
 		</div>
 	);
 }
