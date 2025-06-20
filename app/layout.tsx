@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat } from "next/font/google";
 
 import { Toaster } from "@/vue/components/toaster";
+import { ThemeScript } from "@/vue/components/utils/theme-script";
 import { ThemeProvider } from "@/vue/providers/theme.provider";
 import { SiteConfig } from "@/vue/site-config";
 
@@ -40,13 +41,16 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="fr" suppressHydrationWarning>
+			<head>
+				<ThemeScript />
+			</head>
 			<body
 				suppressHydrationWarning
-				className={`${montserratSans.variable} ${geistMono.variable} relative min-h-[100dvh] antialiased`}
+				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative min-h-[100dvh] antialiased`}
 			>
 				<ThemeProvider>
 					<Toaster />
-					<main className="bg-theme-color relative min-h-[100dvh] p-4">{children}</main>
+					<main className="p-4">{children}</main>
 				</ThemeProvider>
 			</body>
 		</html>
