@@ -4,20 +4,20 @@ import { Crisis } from "@/main/domain/Crisis";
 
 export class GetAllCrisis<T> {
 	private readonly crisisRepository: CrisisRepository;
-	private readonly crisisPresenter: Presenter<Crisis[], T>;
+	private readonly crisesPresenter: Presenter<Crisis[], T>;
 
 	constructor(crisisRepository: CrisisRepository, crisisPresenter: Presenter<Crisis[], T>) {
 		this.crisisRepository = crisisRepository;
-		this.crisisPresenter = crisisPresenter;
+		this.crisesPresenter = crisisPresenter;
 	}
 
-	public async execute(userId: string): Promise<T> {
+	async execute(userId: string): Promise<T> {
 		try {
 			const crisis: Crisis[] = await this.crisisRepository.findAllByUserId(userId);
 
-			return this.crisisPresenter.ok(crisis);
+			return this.crisesPresenter.ok(crisis);
 		} catch (error) {
-			return this.crisisPresenter.error((error as Error).message);
+			return this.crisesPresenter.error((error as Error).message);
 		}
 	}
 }

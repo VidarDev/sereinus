@@ -12,7 +12,7 @@ export class CrisisPrismaRepository implements CrisisRepository {
 		this.crisisPrismaDao = crisisPrismaDao;
 	}
 
-	public async findAllByUserId(userId: string): Promise<Crisis[]> {
+	async findAllByUserId(userId: string): Promise<Crisis[]> {
 		try {
 			return await this.findAllInDatabase(userId);
 		} catch (error) {
@@ -34,7 +34,7 @@ export class CrisisPrismaRepository implements CrisisRepository {
 		});
 	}
 
-	public async save(userId: string, crisis: Crisis): Promise<void> {
+	async save(userId: string, crisis: Crisis): Promise<void> {
 		try {
 			await this.saveToDatabase(userId, crisis);
 		} catch (error) {
@@ -60,7 +60,7 @@ export class CrisisPrismaRepository implements CrisisRepository {
 		}
 	}
 
-	public async update(userId: string, crisis: Crisis): Promise<void> {
+	async update(userId: string, crisis: Crisis): Promise<void> {
 		try {
 			await this.updateInDatabase(userId, crisis);
 		} catch (error) {

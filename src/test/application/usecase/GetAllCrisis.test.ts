@@ -8,10 +8,10 @@ import { Crisis } from "@/main/domain/Crisis";
 describe("Get All Crisis", () => {
 	let getAllCrisis: GetAllCrisis<unknown>;
 	let crisisRepository: CrisisRepository;
-	let crisisPresenter: Presenter<Crisis[], unknown>;
+	let crisesPresenter: Presenter<Crisis[], unknown>;
 
 	beforeEach(() => {
-		crisisPresenter = {
+		crisesPresenter = {
 			ok: jest.fn(),
 			error: jest.fn()
 		};
@@ -26,7 +26,7 @@ describe("Get All Crisis", () => {
 			save: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>()
 		};
 
-		getAllCrisis = new GetAllCrisis<unknown>(crisisRepository, crisisPresenter);
+		getAllCrisis = new GetAllCrisis<unknown>(crisisRepository, crisesPresenter);
 	});
 
 	test("Given a userId, when getting its crisis, then they are presented", async () => {
@@ -38,7 +38,7 @@ describe("Get All Crisis", () => {
 
 		// Then
 		expect(crisisRepository.findAllByUserId).toHaveBeenCalledWith(userId);
-		expect(crisisPresenter.ok).toHaveBeenCalledWith([
+		expect(crisesPresenter.ok).toHaveBeenCalledWith([
 			new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis"),
 			new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45)
 		]);
@@ -56,6 +56,6 @@ describe("Get All Crisis", () => {
 
 		// Then
 		expect(crisisRepository.findAllByUserId).toHaveBeenCalledWith(userId);
-		expect(crisisPresenter.error).toHaveBeenCalledWith("error");
+		expect(crisesPresenter.error).toHaveBeenCalledWith("error");
 	});
 });
