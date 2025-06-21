@@ -1,0 +1,61 @@
+import { beforeEach, describe, expect, jest, test } from "@jest/globals";
+
+import { CrisisRepository } from "@/main/application/port/Crisis.repository.interface";
+import { Presenter } from "@/main/application/port/Presenter.interface";
+import { GetAllCrisis } from "@/main/application/usecase/GetAllCrisis";
+import { Crisis } from "@/main/domain/Crisis";
+
+describe("Get All Crisis", () => {
+	let getAllCrisis: GetAllCrisis<unknown>;
+	let crisisRepository: CrisisRepository;
+	let crisisPresenter: Presenter<Crisis[], unknown>;
+
+	beforeEach(() => {
+		crisisPresenter = {
+			ok: jest.fn(),
+			error: jest.fn()
+		};
+
+		crisisRepository = {
+			findAllByUserId: jest
+				.fn<(userId: string) => Promise<Crisis[]>>()
+				.mockResolvedValue([
+					new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis"),
+					new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45)
+				]),
+			save: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>()
+		};
+
+		getAllCrisis = new GetAllCrisis<unknown>(crisisRepository, crisisPresenter);
+	});
+
+	test("Given a userId, when getting its crisis, then they are presented", async () => {
+		// Given
+		const userId = "1";
+
+		// When
+		await getAllCrisis.execute(userId);
+
+		// Then
+		expect(crisisRepository.findAllByUserId).toHaveBeenCalledWith(userId);
+		expect(crisisPresenter.ok).toHaveBeenCalledWith([
+			new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "First crisis"),
+			new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45)
+		]);
+	});
+
+	test("Given a userId, when getting the crisis fails, then an error is presented", async () => {
+		// Given
+		crisisRepository.findAllByUserId = jest
+			.fn<(userId: string) => Promise<Crisis[]>>()
+			.mockRejectedValue(new Error("error"));
+		const userId = "1";
+
+		// When
+		await getAllCrisis.execute(userId);
+
+		// Then
+		expect(crisisRepository.findAllByUserId).toHaveBeenCalledWith(userId);
+		expect(crisisPresenter.error).toHaveBeenCalledWith("error");
+	});
+});
