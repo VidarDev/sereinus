@@ -1,6 +1,7 @@
-import { CrisisPrismaDao } from "@/main/infrastructure/dao/Crisis.prisma.dao";
 import { PrismaClient } from "@prisma/client";
+
 import { CrisisRepository } from "@/main/application/port/Crisis.repository.interface";
+import { CrisisPrismaDao } from "@/main/infrastructure/dao/Crisis.prisma.dao";
 
 export const DI_SYMBOLS = {
 	PrismaClient: Symbol.for("PrismaClient"),
