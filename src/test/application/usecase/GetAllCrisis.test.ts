@@ -12,8 +12,8 @@ describe("Get All Crisis", () => {
 
 	beforeEach(() => {
 		crisesPresenter = {
-			ok: jest.fn(),
-			error: jest.fn()
+			ok: jest.fn<(crises: Crisis[]) => unknown>(),
+			error: jest.fn<(errorMessage: string) => unknown>()
 		};
 
 		crisisRepository = {
