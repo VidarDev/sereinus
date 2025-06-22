@@ -1,6 +1,7 @@
 import { createContainer } from "@evyweb/ioctopus";
 
 import { createInfrastructureModule } from "./modules/infrastructure.module";
+import { createPWAModule } from "@/di/modules/pwa.module";
 import { DI_SYMBOLS, DiReturnTypes } from "./types";
 
 const applicationContainer = createContainer();

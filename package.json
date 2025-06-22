@@ -4,19 +4,25 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev --turbopack",
-		"clean": "next lint --fix && tsc --noEmit && prettier --write .",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"lint-fix": "next lint --fix",
+		"lint:fix": "next lint --fix",
 		"format": "prettier --write .",
-		"postinstall": "prisma generate",
-		"knip": "knip --config knip.json",
+		"postinstall": "prisma generate && husky install",
 		"ts": "tsc --noEmit",
-		"test": "jest",
+		"test": "NODE_ENV=test jest --coverage",
+		"test:ci": "NODE_ENV=test jest --ci --coverage --maxWorkers=2",
+		"db:setup": "docker compose -f docker-compose.test.yaml up -d",
+		"db:teardown": "docker compose -f docker-compose.test.yaml down -v",
 		"prisma-generate": "prisma generate",
 		"prisma-studio": "prisma studio",
 		"vercel-build": "prisma generate && next build && prisma migrate deploy",
+		"security:audit": "npm audit --audit-level=moderate",
+		"security:fix": "npm audit fix",
+		"quality:check": "npm run lint && npm run ts && npm run format -- --check",
+		"quality:fix": "npm run lint:fix && npm run format",
+		"prepare": "husky install"
 	},
 	"dependencies": {
 		"@evyweb/ioctopus": "^1.2.0",
@@ -33,6 +39,7 @@
 		"react-dom": "^19.0.0",
 		"sonner": "^2.0.5",
 		"tailwind-merge": "^3.3.1",
+		"tslog": "^4.9.3",
 		"zod": "^3.25.67",
 		"zustand": "^5.0.5"
 	},
@@ -40,6 +47,9 @@
 		"@eslint/eslintrc": "^3",
 		"@jest/globals": "^30.0.2",
 		"@tailwindcss/postcss": "^4",
+		"@testing-library/jest-dom": "^6.2.0",
+		"@testing-library/react": "^16.0.1",
+		"@testing-library/user-event": "^14.5.2",
 		"@types/node": "^20.19.1",
 		"@types/pg": "^8.15.4",
 		"@types/react": "^19",
@@ -50,8 +60,9 @@
 		"eslint-config-prettier": "^10.1.5",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"globals": "^16.2.0",
+		"husky": "^9.0.11",
 		"jest": "^30.0.2",
-		"knip": "^5.61.0",
+		"jest-environment-jsdom": "^30.0.2",
 		"pg": "^8.16.2",
 		"prettier": "^3.5.3",
 		"prettier-plugin-tailwindcss": "^0.6.12",
@@ -63,5 +74,9 @@
 		"tw-animate-css": "^1.3.4",
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.34.1"
+	},
+	"engines": {
+		"node": ">=22.0.0",
+		"npm": ">=10.0.0"
 	}
 }

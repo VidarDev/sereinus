@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Badge } from "@/vue/components/ui/badge";
 import { Button } from "@/vue/components/ui/button";
@@ -60,7 +60,7 @@ export default function ServiceWorkerTestPage() {
 		}
 	};
 
-	const testServiceWorker = async () => {
+	const testServiceWorker = useCallback(async () => {
 		console.log("🔍 Test Service Worker - Début");
 
 		const newResults = {
@@ -140,11 +140,11 @@ export default function ServiceWorkerTestPage() {
 
 		setResults(newResults);
 		console.log("🔍 Test Service Worker - Terminé", newResults);
-	};
+	}, []);
 
 	useEffect(() => {
 		testServiceWorker();
-	}, []);
+	}, [testServiceWorker]);
 
 	const getIOSInfo = () => {
 		const userAgent = navigator.userAgent;

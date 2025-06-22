@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import { Client } from "pg";
 
-import { getInjection } from "../../../di/container";
+import { getInjection } from "@/di/container";
 
 const waitForPostgres = async (retries = 10, delay = 250) => {
 	for (let i = 0; i < retries; i++) {
@@ -17,12 +17,13 @@ const waitForPostgres = async (retries = 10, delay = 250) => {
 		}
 	}
 
-	throw new Error("❌ Could not connect to Postgres in time.");
+	throw new Error("[ERROR] Could not connect to Postgres in time.");
 };
 
 export const setupTestDatabase = async () => {
 	await waitForPostgres();
 
+	// Reset the database schema
 	execSync("npx prisma db push --force-reset --skip-generate", {
 		env: {
 			...process.env,
@@ -31,7 +32,9 @@ export const setupTestDatabase = async () => {
 		stdio: "inherit"
 	});
 
-	await getInjection("PrismaClient").crisis.createMany({
+	// Seed test data
+	const prismaClient = getInjection("PrismaClient");
+	await prismaClient.crisis.createMany({
 		data: [
 			{
 				userId: "1",

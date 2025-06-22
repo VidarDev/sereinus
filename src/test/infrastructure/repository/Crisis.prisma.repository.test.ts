@@ -1,19 +1,17 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { PrismaClient } from "@prisma/client";
-import { execSync } from "child_process";
 
+import { getInjection } from "@/di/container";
 import { Crisis } from "@/main/domain/Crisis";
 import { CrisisPrismaDao } from "@/main/infrastructure/dao/Crisis.prisma.dao";
 import { CrisisPrismaRepository } from "@/main/infrastructure/repository/Crisis.prisma.repository";
 import { setupTestDatabase, teardownTestDatabase } from "@/test/helper/prismaHelper";
 
-import { getInjection } from "../../../../di/container";
-
 describe("Crisis Prisma Repository", () => {
 	let crisisPrismaRepository: CrisisPrismaRepository;
 
 	beforeAll(() => {
-		execSync("docker compose up -d");
+		// Docker container is managed by setupTests.ts globally
 	});
 
 	beforeEach(async () => {
@@ -23,7 +21,7 @@ describe("Crisis Prisma Repository", () => {
 
 	afterAll(async () => {
 		await teardownTestDatabase();
-		execSync("docker compose down");
+		// Docker container cleanup is managed by setupTests.ts globally
 	});
 
 	describe("Given a user id", () => {

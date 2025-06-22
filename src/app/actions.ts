@@ -2,38 +2,32 @@
 
 import { getInjection } from "@/di/container";
 
-export const login = async (username: string, password: string) => {
-	const authenticationController = getInjection("AuthenticationController");
-
-	return await authenticationController.login(username, password);
-};
-
-export const registerServiceWorker = async () => {
+export async function registerServiceWorker() {
 	const pwaController = getInjection("PWAController");
-
 	return await pwaController.registerServiceWorker();
-};
+}
 
-export const checkServiceWorkerUpdates = async () => {
+export async function checkServiceWorkerUpdates() {
 	const pwaController = getInjection("PWAController");
-
 	return await pwaController.checkServiceWorkerUpdates();
-};
+}
 
-export const activateServiceWorkerUpdate = async () => {
+export async function activateServiceWorkerUpdate() {
 	const pwaController = getInjection("PWAController");
-
 	return await pwaController.activateServiceWorkerUpdate();
-};
+}
 
-export const getInstallationState = async () => {
+export async function getInstallationState() {
 	const pwaController = getInjection("PWAController");
-
 	return pwaController.getInstallationState();
-};
+}
 
-export const getInstallInstructions = async (platform: string) => {
+export async function installApp() {
 	const pwaController = getInjection("PWAController");
+	return await pwaController.installApp();
+}
 
+export async function getInstallInstructions(platform: string) {
+	const pwaController = getInjection("PWAController");
 	return pwaController.getInstallInstructions(platform);
-};
+}

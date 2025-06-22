@@ -16,7 +16,7 @@ export class CrisisPrismaRepository implements CrisisRepository {
 		try {
 			return await this.findAllInDatabase(userId);
 		} catch (error) {
-			console.error("Failed to fetch crises:", error);
+			console.error("Failed to fetch crises:", error, { userId });
 
 			throw new Error("Une erreur est survenue lors de la récupération des crises.");
 		}

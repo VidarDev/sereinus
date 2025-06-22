@@ -1,10 +1,9 @@
 import { createModule } from "@evyweb/ioctopus";
 
+import { DI_SYMBOLS } from "@/di/types";
 import { ManagePWAInstallation } from "@/main/application/usecase/ManagePWAInstallation.usecase";
 import { RegisterServiceWorker } from "@/main/application/usecase/RegisterServiceWorker.usecase";
 import { PWAController } from "@/main/presentation/controller/PWA.controller";
-
-import { DI_SYMBOLS } from "../types";
 
 export const createPWAModule = () => {
 	const pwaModule = createModule();
