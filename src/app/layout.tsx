@@ -4,7 +4,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat } from "next/font/google";
 
 import { Toaster } from "@/vue/components/toaster";
-import { ErrorBoundary } from "@/vue/components/utils/error-boundary";
 import { ServiceWorkerRegistration } from "@/vue/components/utils/service-worker-registration";
 import { TailwindIndicator } from "@/vue/components/utils/tailwind-indicator";
 import { ThemeScript } from "@/vue/components/utils/theme-script";
@@ -52,12 +51,10 @@ export default function RootLayout({
 				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative min-h-[100dvh] antialiased`}
 			>
 				<ThemeProvider>
-					<ErrorBoundary>
-						<ServiceWorkerRegistration />
-						<Toaster />
-						<TailwindIndicator />
-						<main className="p-4">{children}</main>
-					</ErrorBoundary>
+					<ServiceWorkerRegistration />
+					<Toaster />
+					<TailwindIndicator />
+					<main className="p-4">{children}</main>
 				</ThemeProvider>
 			</body>
 		</html>

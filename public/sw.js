@@ -1,6 +1,6 @@
-const CACHE_NAME = 'sereinus-v1';
-const STATIC_CACHE_NAME = 'sereinus-static-v1';
-const RUNTIME_CACHE_NAME = 'sereinus-runtime-v1';
+const CACHE_NAME = 'amai-v1';
+const STATIC_CACHE_NAME = 'amai-static-v1';
+const RUNTIME_CACHE_NAME = 'amai-runtime-v1';
 
 const STATIC_ASSETS = [
   '/',

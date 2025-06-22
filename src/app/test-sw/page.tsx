@@ -24,6 +24,11 @@ export default function ServiceWorkerTestPage() {
 
 	// Détection du mode privé (même logique que dans PWADebugModal)
 	const detectPrivateMode = async (): Promise<boolean> => {
+		// Only run on client side
+		if (typeof window === "undefined") {
+			return false;
+		}
+
 		try {
 			// Test 1: Vérifier si on peut utiliser localStorage
 			if (typeof window.localStorage === "undefined") {
@@ -61,6 +66,11 @@ export default function ServiceWorkerTestPage() {
 	};
 
 	const testServiceWorker = useCallback(async () => {
+		// Only run on client side
+		if (typeof window === "undefined") {
+			return;
+		}
+
 		console.log("🔍 Test Service Worker - Début");
 
 		const newResults = {
@@ -146,19 +156,26 @@ export default function ServiceWorkerTestPage() {
 		testServiceWorker();
 	}, [testServiceWorker]);
 
-	const getIOSInfo = () => {
-		const userAgent = navigator.userAgent;
-		const isIOS = /iPad|iPhone|iPod/.test(userAgent);
-		const version = userAgent.match(/OS (\d+)_(\d+)/);
+	const [iosInfo, setIosInfo] = useState({
+		isIOS: false,
+		version: "Inconnue",
+		userAgent: "Chargement..."
+	});
 
-		return {
-			isIOS,
-			version: version ? `${version[1]}.${version[2]}` : "Inconnue",
-			userAgent
-		};
-	};
+	useEffect(() => {
+		// Only run on client side
+		if (typeof window !== "undefined" && navigator) {
+			const userAgent = navigator.userAgent;
+			const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+			const version = userAgent.match(/OS (\d+)_(\d+)/);
 
-	const iosInfo = getIOSInfo();
+			setIosInfo({
+				isIOS,
+				version: version ? `${version[1]}.${version[2]}` : "Inconnue",
+				userAgent
+			});
+		}
+	}, []);
 
 	return (
 		<div className="container mx-auto space-y-6 p-4">

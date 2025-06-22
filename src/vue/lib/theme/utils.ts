@@ -46,7 +46,7 @@ export function generateThemeScript(): string {
 	return `
 		(function() {
 			try {
-				var theme = localStorage.getItem('sereinus-theme') || 'default';
+				var theme = localStorage.getItem('amai-theme') || 'default';
 				var themes = ${JSON.stringify(THEME_PRESETS)};
 				
 				if (themes[theme]) {
