@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 
 import { CrisisRepository } from "@/main/application/port/Crisis.repository.interface";
 import { Presenter } from "@/main/application/port/Presenter.interface";
-import { SaveCrisis } from "@/main/application/usecase/SaveCrisis";
+import { UpdateCrisis } from "@/main/application/usecase/UpdateCrisis";
 import { Crisis } from "@/main/domain/Crisis";
 
-describe("Save Crisis Use Case", () => {
-	let saveCrisis: SaveCrisis<unknown>;
+describe("Update Crisis Use Case", () => {
+	let updateCrisis: UpdateCrisis<unknown>;
 	let crisisRepository: CrisisRepository;
 	let crisisPresenter: Presenter<Crisis, unknown>;
 
@@ -22,33 +22,33 @@ describe("Save Crisis Use Case", () => {
 			update: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>()
 		};
 
-		saveCrisis = new SaveCrisis(crisisRepository, crisisPresenter);
+		updateCrisis = new UpdateCrisis(crisisRepository, crisisPresenter);
 	});
 
-	test("Given a userId and a crisis, when saving the crisis, then it is presented", async () => {
+	test("Given a userId and a crisis, when updating the crisis, then it is presented", async () => {
 		// Given
 		const userId = "1";
 		const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "Test crisis");
 
 		// When
-		await saveCrisis.execute(userId, crisis);
+		await updateCrisis.execute(userId, crisis);
 
 		// Then
-		expect(crisisRepository.save).toHaveBeenCalledWith(userId, crisis);
+		expect(crisisRepository.update).toHaveBeenCalledWith(userId, crisis);
 		expect(crisisPresenter.ok).toHaveBeenCalledWith(crisis);
 	});
 
-	test("Given a userId and a crisis, when saving fails, then an error is presented", async () => {
+	test("Given a userId and a crisis, when updating fails, then an error is presented", async () => {
 		// Given
 		const userId = "1";
 		const crisis = new Crisis(new Date(2025, 0, 1, 0, 0, 0), 45, "Test crisis");
-		crisisRepository.save = jest.fn<(userId: string) => Promise<void>>().mockRejectedValue(new Error("error"));
+		crisisRepository.update = jest.fn<(userId: string) => Promise<void>>().mockRejectedValue(new Error("error"));
 
 		// When
-		await saveCrisis.execute(userId, crisis);
+		await updateCrisis.execute(userId, crisis);
 
 		// Then
-		expect(crisisRepository.save).toHaveBeenCalledWith(userId, crisis);
+		expect(crisisRepository.update).toHaveBeenCalledWith(userId, crisis);
 		expect(crisisPresenter.error).toHaveBeenCalledWith("error");
 	});
 });
