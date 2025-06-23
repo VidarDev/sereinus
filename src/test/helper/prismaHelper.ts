@@ -23,7 +23,6 @@ const waitForPostgres = async (retries = 10, delay = 250) => {
 export const setupTestDatabase = async () => {
 	await waitForPostgres();
 
-	// Reset the database schema
 	execSync("npx prisma db push --force-reset --skip-generate", {
 		env: {
 			...process.env,
@@ -32,9 +31,7 @@ export const setupTestDatabase = async () => {
 		stdio: "inherit"
 	});
 
-	// Seed test data
-	const prismaClient = getInjection("PrismaClient");
-	await prismaClient.crisis.createMany({
+	await getInjection("PrismaClient").crisis.createMany({
 		data: [
 			{
 				userId: "1",

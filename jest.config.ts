@@ -46,7 +46,6 @@ const config: Config = {
 
 	// Test setup
 	setupFiles: ["<rootDir>/src/test/helper/setupEnv.ts"],
-	setupFilesAfterEnv: ["<rootDir>/src/test/helper/setupTests.ts"],
 
 	// Test patterns
 	testMatch: [

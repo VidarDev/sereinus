@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 
 import { ManagePWAInstallation } from "@/main/application/usecase/ManagePWAInstallation.usecase";
 
-// Mock du DOM global
 Object.defineProperty(global, "window", {
 	value: {
 		navigator: { userAgent: "" },

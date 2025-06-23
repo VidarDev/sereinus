@@ -2,13 +2,11 @@ import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 
 import { RegisterServiceWorker } from "@/main/application/usecase/RegisterServiceWorker.usecase";
 
-// Mock du ServiceWorkerRegistration
 interface MockServiceWorkerRegistration {
 	waiting?: ServiceWorker;
 	installing?: ServiceWorker;
 }
 
-// Mock du ServiceWorker
 interface MockServiceWorker {
 	postMessage: jest.Mock;
 }
