@@ -9,7 +9,7 @@ export class CrisisPrismaDao {
 		this.prisma = prisma;
 	}
 
-	public async findAllByUserId(userId: string): Promise<CrisisDTO[]> {
+	async findAllByUserId(userId: string): Promise<CrisisDTO[]> {
 		const data = await this.prisma.crisis.findMany({
 			where: {
 				userId: userId
@@ -21,7 +21,7 @@ export class CrisisPrismaDao {
 		});
 	}
 
-	public async save(crisis: CrisisDTO): Promise<void> {
+	async save(crisis: CrisisDTO): Promise<void> {
 		await this.prisma.crisis.create({
 			data: {
 				userId: crisis.userId,
@@ -32,7 +32,7 @@ export class CrisisPrismaDao {
 		});
 	}
 
-	public async update(crisis: CrisisDTO): Promise<void> {
+	async update(crisis: CrisisDTO): Promise<void> {
 		await this.prisma.crisis.update({
 			where: {
 				userId_datetime: {
