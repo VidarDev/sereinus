@@ -18,30 +18,28 @@ const config: Config = {
 		"/prisma/",
 		"/public/",
 		"generated",
-		".d.ts",
+		" (.*).d.ts",
 		"jest.config.ts",
 		"next.config.ts",
 		"postcss.config.mjs",
-		"tailwind.config.ts"
+		"tailwind.config.ts",
+		"/src/test/helper/"
 	],
 
-	// Minimum coverage (80%)
+	// Minimum coverage (100%)
 	coverageThreshold: {
 		global: {
-			branches: 80,
-			functions: 80,
-			lines: 80,
-			statements: 80
+			branches: 100,
+			functions: 100,
+			lines: 100,
+			statements: 100
 		}
 	},
 
 	// Module resolution
 	moduleNameMapper: {
 		"^@/di/(.*)$": "<rootDir>/di/$1",
-		"^@/(.*)$": "<rootDir>/src/$1",
-		"^@/main/(.*)$": "<rootDir>/src/main/$1",
-		"^@/vue/(.*)$": "<rootDir>/src/vue/$1",
-		"^@/test/(.*)$": "<rootDir>/src/test/$1"
+		"^@/(.*)$": "<rootDir>/src/$1"
 	},
 
 	// Test setup

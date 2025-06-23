@@ -1,7 +1,9 @@
+type Platform = "chrome" | "firefox" | "safari" | "edge" | "other";
+
 export interface PWAInstallationState {
 	canInstall: boolean;
 	isInstalled: boolean;
-	platform: "chrome" | "firefox" | "safari" | "edge" | "other";
+	platform: Platform;
 	installMethod: "beforeinstallprompt" | "manual" | "ios-safari" | "none";
 }
 
@@ -23,7 +25,7 @@ interface NavigatorWithStandalone extends Navigator {
 export class ManagePWAInstallation {
 	private deferredPrompt: BeforeInstallPromptEvent | null = null;
 
-	public getInstallationState = (): PWAInstallationState => {
+	public getInstallationState(): PWAInstallationState {
 		const platform = this.detectPlatform();
 		const isInstalled = this.isAppInstalled();
 
@@ -33,15 +35,72 @@ export class ManagePWAInstallation {
 			platform,
 			installMethod: this.getInstallMethod(platform, isInstalled)
 		};
-	};
+	}
 
-	public setDeferredPrompt = (event: BeforeInstallPromptEvent): void => {
+	private canInstallApp(): boolean {
+		if (typeof window === "undefined") {
+			return false;
+		}
+
+		if (this.isAppInstalled()) {
+			return false;
+		}
+
+		if (this.deferredPrompt) {
+			return true;
+		}
+
+		const platform = this.detectPlatform();
+
+		return platform === "safari";
+	}
+
+	private detectPlatform(): Platform {
+		if (typeof window === "undefined") {
+			return "other";
+		}
+
+		const userAgent = window.navigator.userAgent.toLowerCase();
+
+		if (userAgent.includes("edg/")) {
+			return "edge";
+		} else if (userAgent.includes("chrome") && !userAgent.includes("edg/")) {
+			return "chrome";
+		} else if (userAgent.includes("firefox")) {
+			return "firefox";
+		} else if (userAgent.includes("safari") && !userAgent.includes("chrome")) {
+			return "safari";
+		}
+
+		return "other";
+	}
+
+	private isAppInstalled(): boolean {
+		if (typeof window === "undefined") {
+			return false;
+		}
+
+		// Standalone (PWA installed)
+		if (window.matchMedia("(display-mode: standalone)").matches) {
+			return true;
+		}
+
+		// iOS Safari
+		if ("standalone" in window.navigator) {
+			return (window.navigator as NavigatorWithStandalone).standalone as boolean;
+		}
+
+		// Android Chrome
+		return window.matchMedia("(display-mode: minimal-ui)").matches;
+	}
+
+	public setDeferredPrompt(event: BeforeInstallPromptEvent): void {
 		this.deferredPrompt = event;
-	};
+	}
 
-	public clearDeferredPrompt = (): void => {
+	public clearDeferredPrompt(): void {
 		this.deferredPrompt = null;
-	};
+	}
 
 	public installApp = async (): Promise<PWAInstallationResult> => {
 		if (!this.deferredPrompt) {
@@ -85,49 +144,6 @@ export class ManagePWAInstallation {
 				return "Utilisez les options de votre navigateur pour installer cette application.";
 		}
 	};
-
-	private detectPlatform(): "chrome" | "firefox" | "safari" | "edge" | "other" {
-		if (typeof window === "undefined") return "other";
-
-		const userAgent = window.navigator.userAgent.toLowerCase();
-
-		if (userAgent.includes("edg/")) return "edge";
-		if (userAgent.includes("chrome") && !userAgent.includes("edg/")) return "chrome";
-		if (userAgent.includes("firefox")) return "firefox";
-		if (userAgent.includes("safari") && !userAgent.includes("chrome")) return "safari";
-
-		return "other";
-	}
-
-	private isAppInstalled(): boolean {
-		if (typeof window === "undefined") return false;
-
-		// Standalone (PWA installed)
-		if (window.matchMedia("(display-mode: standalone)").matches) {
-			return true;
-		}
-
-		// iOS Safari
-		if ("navigator" in window && "standalone" in window.navigator) {
-			return (window.navigator as NavigatorWithStandalone).standalone === true;
-		}
-
-		// Android Chrome
-		if (window.matchMedia("(display-mode: minimal-ui)").matches) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private canInstallApp(): boolean {
-		if (typeof window === "undefined") return false;
-		if (this.isAppInstalled()) return false;
-		if (this.deferredPrompt) return true;
-
-		const platform = this.detectPlatform();
-		return platform === "safari";
-	}
 
 	private getInstallMethod(
 		platform: string,
