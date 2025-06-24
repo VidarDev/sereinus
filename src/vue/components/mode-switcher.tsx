@@ -37,6 +37,7 @@ export function ModeSwitcher({ className, showLabels = false, size = "sm", varia
 				active: colorScheme === "auto"
 			}
 		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[colorScheme, systemScheme]
 	);
 
