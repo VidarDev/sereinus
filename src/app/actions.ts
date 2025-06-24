@@ -1,33 +1,13 @@
 "use server";
 
-import { getInjection } from "@/di/container";
+// Actions PWA supprimées - Fonctionnalités PWA déplacées vers la couche présentation
+// PWA est maintenant géré côté client avec React hooks et ne nécessite plus d'actions serveur
 
-export async function registerServiceWorker() {
-	const pwaController = getInjection("PWAController");
-	return await pwaController.registerServiceWorker();
-}
+// Les anciennes actions ont été remplacées par :
+// - usePWAInstall() hook pour l'installation
+// - usePWAUpdate() hook pour les mises à jour
+// - usePWA() hook pour l'état global
 
-export async function checkServiceWorkerUpdates() {
-	const pwaController = getInjection("PWAController");
-	return await pwaController.checkServiceWorkerUpdates();
-}
-
-export async function activateServiceWorkerUpdate() {
-	const pwaController = getInjection("PWAController");
-	return await pwaController.activateServiceWorkerUpdate();
-}
-
-export async function getInstallationState() {
-	const pwaController = getInjection("PWAController");
-	return pwaController.getInstallationState();
-}
-
-export async function installApp() {
-	const pwaController = getInjection("PWAController");
-	return await pwaController.installApp();
-}
-
-export async function getInstallInstructions(platform: string) {
-	const pwaController = getInjection("PWAController");
-	return pwaController.getInstallInstructions(platform);
-}
+// Exemples d'utilisation dans les composants React :
+// const { installApp, canInstall } = usePWA();
+// const { activateUpdate, hasUpdate } = usePWA();

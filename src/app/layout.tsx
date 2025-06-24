@@ -4,9 +4,10 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat } from "next/font/google";
 
 import { Toaster } from "@/vue/components/toaster";
-import { ServiceWorkerRegistration } from "@/vue/components/utils/service-worker-registration";
+import { PWAIndicator } from "@/vue/components/utils/pwa-indicator";
 import { TailwindIndicator } from "@/vue/components/utils/tailwind-indicator";
 import { ThemeScript } from "@/vue/components/utils/theme-script";
+import { PWAProvider } from "@/vue/providers/pwa.provider";
 import { ThemeProvider } from "@/vue/providers/theme.provider";
 import { SiteConfig } from "@/vue/site-config";
 
@@ -51,10 +52,12 @@ export default function RootLayout({
 				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative min-h-[100dvh] antialiased`}
 			>
 				<ThemeProvider>
-					<ServiceWorkerRegistration />
-					<Toaster />
-					<TailwindIndicator />
-					<main className="p-4">{children}</main>
+					<PWAProvider>
+						<Toaster />
+						<TailwindIndicator />
+						<PWAIndicator />
+						<main className="p-4">{children}</main>
+					</PWAProvider>
 				</ThemeProvider>
 			</body>
 		</html>
