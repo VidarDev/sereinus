@@ -6,5 +6,8 @@ echo "Running pre-commit checks..."
 echo "Code quality & linting..."
 npm run quality:check
 
+echo "Building application..."
+npm run build
+
 echo "[DONE] Pre-commit checks completed!"
 

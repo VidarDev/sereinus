@@ -1,4 +1,4 @@
 export interface Presenter<I, O> {
-	ok(crisis: I): O;
+	ok(value?: I): O;
 	error(errorMessage: string): O;
 }

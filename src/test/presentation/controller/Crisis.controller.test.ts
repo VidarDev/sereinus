@@ -3,7 +3,6 @@ import { execSync } from "child_process";
 
 import { getInjection } from "@/di/container";
 import { CrisisViewModel } from "@/main/presentation/dto/Crisis.viewmodel";
-import { ResponseViewModel } from "@/main/presentation/dto/Response.viewmodel";
 import { setupTestDatabase, teardownTestDatabase } from "@/test/helper/prismaHelper";
 
 describe("Crisis Controller", () => {
@@ -29,14 +28,12 @@ describe("Crisis Controller", () => {
 		const duration = 3;
 
 		// When
-		const actualResponseViewModel = await crisisController.save(userId, date, duration);
+		const actualViewModel = await crisisController.save(userId, date, duration);
 
 		// Then
-		const expectedResponseViewModel = ResponseViewModel.success<CrisisViewModel>(
-			new CrisisViewModel("01/01/2025", "12:30", "03s")
-		);
+		const expectedViewModel = true;
 
-		expect(actualResponseViewModel).toEqual(expectedResponseViewModel);
+		expect(actualViewModel).toEqual(expectedViewModel);
 	});
 
 	test("Given a user id, when getting crises, then it should return a successful response", async () => {
@@ -44,14 +41,14 @@ describe("Crisis Controller", () => {
 		const userId = "1";
 
 		// When
-		const actualResponseViewModel = await crisisController.getAll(userId);
+		const actualViewModels = await crisisController.getAll(userId);
 
 		// Then
-		const expectedResponseViewModel = ResponseViewModel.success<CrisisViewModel[]>([
+		const expectedViewModels = [
 			new CrisisViewModel("01/01/2025", "00:00", "45s", "First crisis"),
 			new CrisisViewModel("02/01/2025", "00:00", "45s")
-		]);
+		];
 
-		expect(actualResponseViewModel).toEqual(expectedResponseViewModel);
+		expect(actualViewModels).toEqual(expectedViewModels);
 	});
 });

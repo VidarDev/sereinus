@@ -4,9 +4,9 @@ import { Crisis } from "@/main/domain/Crisis";
 
 export class SaveCrisis<T> {
 	private readonly crisisRepository: CrisisRepository;
-	private readonly crisisPresenter: Presenter<Crisis, T>;
+	private readonly crisisPresenter: Presenter<null, T>;
 
-	constructor(crisisRepository: CrisisRepository, crisisPresenter: Presenter<Crisis, T>) {
+	constructor(crisisRepository: CrisisRepository, crisisPresenter: Presenter<null, T>) {
 		this.crisisRepository = crisisRepository;
 		this.crisisPresenter = crisisPresenter;
 	}
@@ -15,7 +15,7 @@ export class SaveCrisis<T> {
 		try {
 			await this.crisisRepository.save(userId, crisis);
 
-			return this.crisisPresenter.ok(crisis);
+			return this.crisisPresenter.ok();
 		} catch (error) {
 			return this.crisisPresenter.error((error as Error).message);
 		}

@@ -8,11 +8,11 @@ import { Crisis } from "@/main/domain/Crisis";
 describe("Save Crisis Use Case", () => {
 	let saveCrisis: SaveCrisis<unknown>;
 	let crisisRepository: CrisisRepository;
-	let crisisPresenter: Presenter<Crisis, unknown>;
+	let presenter: Presenter<null, unknown>;
 
 	beforeEach(() => {
-		crisisPresenter = {
-			ok: jest.fn<(crisis: Crisis) => unknown>(),
+		presenter = {
+			ok: jest.fn<() => unknown>(),
 			error: jest.fn<(errorMessage: string) => unknown>()
 		};
 
@@ -22,7 +22,7 @@ describe("Save Crisis Use Case", () => {
 			update: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>()
 		};
 
-		saveCrisis = new SaveCrisis(crisisRepository, crisisPresenter);
+		saveCrisis = new SaveCrisis(crisisRepository, presenter);
 	});
 
 	test("Given a userId and a crisis, when saving the crisis, then it is presented", async () => {
@@ -35,7 +35,7 @@ describe("Save Crisis Use Case", () => {
 
 		// Then
 		expect(crisisRepository.save).toHaveBeenCalledWith(userId, crisis);
-		expect(crisisPresenter.ok).toHaveBeenCalledWith(crisis);
+		expect(presenter.ok).toHaveBeenCalled();
 	});
 
 	test("Given a userId and a crisis, when saving fails, then an error is presented", async () => {
@@ -49,6 +49,6 @@ describe("Save Crisis Use Case", () => {
 
 		// Then
 		expect(crisisRepository.save).toHaveBeenCalledWith(userId, crisis);
-		expect(crisisPresenter.error).toHaveBeenCalledWith("error");
+		expect(presenter.error).toHaveBeenCalledWith("error");
 	});
 });

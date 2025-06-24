@@ -37,10 +37,12 @@ const CrisisVisualizer = () => {
 			setCrisisInterval(null);
 		}
 
-		const savedCrisis = await save(timer, "1");
+		const response = await save(timer, "1");
 
-		if (savedCrisis.success) {
+		if (response === true) {
 			toast("Crise terminée !");
+		} else {
+			toast.error(response);
 		}
 
 		setTimer(0);
