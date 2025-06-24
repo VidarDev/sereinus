@@ -10,7 +10,7 @@ describe("Crisis Controller", () => {
 	const crisisController = getInjection("CrisisController");
 
 	beforeAll(() => {
-		execSync("docker compose up -d");
+		execSync("docker compose -f docker-compose.test.yaml up -d");
 	});
 
 	beforeEach(async () => {
@@ -19,7 +19,7 @@ describe("Crisis Controller", () => {
 
 	afterAll(async () => {
 		await teardownTestDatabase();
-		execSync("docker compose down");
+		execSync("docker compose -f docker-compose.test.yaml down");
 	});
 
 	test("Given a user id with a date and a duration, when saving a crisis, then it should return a successful response", async () => {
