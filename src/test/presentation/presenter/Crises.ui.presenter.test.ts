@@ -2,7 +2,6 @@ import { describe, expect, test } from "@jest/globals";
 
 import { Crisis } from "@/main/domain/Crisis";
 import { CrisisViewModel } from "@/main/presentation/dto/Crisis.viewmodel";
-import { ResponseViewModel } from "@/main/presentation/dto/Response.viewmodel";
 import { CrisesUiPresenter } from "@/main/presentation/presenter/Crises.ui.presenter";
 
 describe("Crises UI Presenter", () => {
@@ -18,17 +17,17 @@ describe("Crises UI Presenter", () => {
 		];
 
 		// When
-		const actualResponseViewModel = crisesUiPresenter.ok(crises);
+		const actualViewModels = crisesUiPresenter.ok(crises);
 
 		// Then
-		const expectedResponseViewModel = ResponseViewModel.success([
+		const expectedViewModels = [
 			new CrisisViewModel("01/01/2025", "12:30", "1h 03min 03s", "Hello world"),
 			new CrisisViewModel("01/01/2025", "12:30", "1h", "Hello world"),
 			new CrisisViewModel("01/01/2025", "12:30", "1h 00min 02s", "Hello world"),
 			new CrisisViewModel("01/01/2025", "12:30", "00s", "Hello world")
-		]);
+		];
 
-		expect(actualResponseViewModel).toEqual(expectedResponseViewModel);
+		expect(actualViewModels).toEqual(expectedViewModels);
 	});
 
 	test("Given an error, when presenting it, then it should return an error view model", () => {
@@ -36,11 +35,11 @@ describe("Crises UI Presenter", () => {
 		const errorMessage = "An error occurred";
 
 		// When
-		const actualResponseViewModel = crisesUiPresenter.error(errorMessage);
+		const actualViewModel = crisesUiPresenter.error(errorMessage);
 
 		// Then
-		const expectedResponseViewModel = ResponseViewModel.error<CrisisViewModel>("An error occurred");
+		const expectedViewModel = "An error occurred";
 
-		expect(actualResponseViewModel).toEqual(expectedResponseViewModel);
+		expect(actualViewModel).toEqual(expectedViewModel);
 	});
 });
