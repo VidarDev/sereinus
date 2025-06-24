@@ -1,7 +1,7 @@
 "use client";
 
-import { AlertCircle, Check, Download, Loader2, Share, Smartphone } from "lucide-react";
 import { useCallback, useState } from "react";
+import { AlertCircle, Check, Download, Loader2, Share, Smartphone } from "lucide-react";
 
 import { Button } from "@/vue/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/vue/components/ui/dialog";

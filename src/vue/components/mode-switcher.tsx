@@ -1,7 +1,7 @@
 "use client";
 
-import { Monitor, Moon, Sun } from "lucide-react";
 import { useMemo } from "react";
+import { Monitor, Moon, Sun } from "lucide-react";
 
 import { BaseSwitcher } from "@/vue/components/theme-switcher-base";
 import { useTheme } from "@/vue/providers/theme.provider";

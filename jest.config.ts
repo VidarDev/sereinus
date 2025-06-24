@@ -35,7 +35,6 @@ const config: Config = {
 	verbose: process.env.CI === "true",
 	detectOpenHandles: true,
 	forceExit: true
-	]
 };
 
 export default config;
