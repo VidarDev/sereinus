@@ -31,15 +31,11 @@ const config: Config = {
 			clearMocks: true
 		}
 	],
-
-	// Ignore patterns
 	testPathIgnorePatterns: ["/node_modules/", "/.next/", "/coverage/", "/dist/", "/build/"],
-
-	// Verbose output for CI
 	verbose: process.env.CI === "true",
-
 	detectOpenHandles: true,
 	forceExit: true
+	]
 };
 
 export default config;
