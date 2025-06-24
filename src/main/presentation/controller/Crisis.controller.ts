@@ -23,10 +23,10 @@ export class CrisisController {
 	async save(userId: string, date: Date, duration: number): Promise<ResponseViewModel<CrisisViewModel>> {
 		const crisis = new Crisis(date, duration);
 
-		return this.saveCrisis.execute(userId, crisis);
+		return await this.saveCrisis.execute(userId, crisis);
 	}
 
 	async getAll(userId: string): Promise<ResponseViewModel<CrisisViewModel[]>> {
-		return this.getAllCrises.execute(userId);
+		return await this.getAllCrises.execute(userId);
 	}
 }
