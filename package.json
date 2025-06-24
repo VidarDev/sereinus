@@ -16,7 +16,7 @@
 		"test:integration": "jest --selectProjects integration --runInBand",
 		"prisma-generate": "prisma generate",
 		"prisma-studio": "prisma studio",
-		"vercel-build": "prisma generate && next build && prisma db push --force-reset",
+		"vercel-build": "prisma generate && next build && prisma migrate deploy\n",
 		"quality:check": "npm run lint && npm run ts && npm run format -- --check",
 		"quality:fix": "npm run lint:fix && npm run format",
 		"prepare": "husky install"
