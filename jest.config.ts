@@ -30,7 +30,7 @@ const config: Config = {
 			},
 			clearMocks: true
 		}
-	]
+	],
 
 	// Ignore patterns
 	testPathIgnorePatterns: ["/node_modules/", "/.next/", "/coverage/", "/dist/", "/build/"],
