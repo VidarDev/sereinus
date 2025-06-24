@@ -1,29 +1,15 @@
 export class CrisisViewModel {
-	private readonly _date: string;
-	private readonly _time: string;
-	private readonly _duration: string;
-	private readonly _note?: string;
+	readonly formatedDate: string;
+	readonly datetime: Date;
+	readonly time: string;
+	readonly duration: string;
+	readonly note?: string;
 
-	constructor(date: string, time: string, duration: string, note?: string) {
-		this._date = date;
-		this._time = time;
-		this._duration = duration;
-		this._note = note;
-	}
-
-	get date(): string {
-		return this._date;
-	}
-
-	get time(): string {
-		return this._time;
-	}
-
-	get duration(): string {
-		return this._duration;
-	}
-
-	get note(): string | undefined {
-		return this._note;
+	constructor(formatedDate: string, date: Date, time: string, duration: string, note?: string) {
+		this.formatedDate = formatedDate;
+		this.datetime = date;
+		this.time = time;
+		this.duration = duration;
+		this.note = note;
 	}
 }
