@@ -2,7 +2,7 @@ import { CrisisRepository } from "@/main/application/port/Crisis.repository.inte
 import { Presenter } from "@/main/application/port/Presenter.interface";
 import { Crisis } from "@/main/domain/Crisis";
 
-export class GetAllCrisis<T> {
+export class GetAllCrises<T> {
 	private readonly crisisRepository: CrisisRepository;
 	private readonly crisesPresenter: Presenter<Crisis[], T>;
 

@@ -38,4 +38,20 @@ describe("Crisis Controller", () => {
 
 		expect(actualResponseViewModel).toEqual(expectedResponseViewModel);
 	});
+
+	test("Given a user id, when getting crises, then it should return a successful response", async () => {
+		// Given
+		const userId = "1";
+
+		// When
+		const actualResponseViewModel = await crisisController.getAll(userId);
+
+		// Then
+		const expectedResponseViewModel = ResponseViewModel.success<CrisisViewModel[]>([
+			new CrisisViewModel("01/01/2025", "00:00", "45s", "First crisis"),
+			new CrisisViewModel("02/01/2025", "00:00", "45s")
+		]);
+
+		expect(actualResponseViewModel).toEqual(expectedResponseViewModel);
+	});
 });
