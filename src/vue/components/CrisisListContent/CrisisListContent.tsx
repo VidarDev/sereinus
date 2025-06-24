@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { get, update } from "@/app/test/list/actions";
@@ -10,8 +9,6 @@ import { Button } from "@/vue/components/ui/button";
 
 export function CrisisListContent() {
 	const [crises, setCrises] = useState<CrisisViewModel[]>([]);
-
-	const router = useRouter();
 
 	useEffect(() => {
 		const getCrises = async () => {
