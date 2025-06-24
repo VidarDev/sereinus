@@ -1,0 +1,9 @@
+@reference "../../../../app/globals.css";
+
+.crisis-visualizer-container {
+	@apply flex h-full w-full flex-col items-center justify-center gap-8;
+
+	& > .crisis-visualizer {
+		@apply rounded-full bg-black p-8;
+	}
+}
