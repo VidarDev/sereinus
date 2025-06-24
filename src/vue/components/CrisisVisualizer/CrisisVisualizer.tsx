@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { CrisisViewModel } from "@/main/presentation/dto/Crisis.viewmodel";
+import { ResponseViewModel } from "@/main/presentation/dto/Response.viewmodel";
 import { save } from "@/vue/components/CrisisVisualizer/actions";
 import { Button } from "@/vue/components/ui/button";
 import { Toaster } from "@/vue/components/ui/sonner";
@@ -38,9 +40,9 @@ const CrisisVisualizer = () => {
 			setCrisisInterval(null);
 		}
 
-		const savedCrisis = await save(timer, "1");
+		const savedCrisis: ResponseViewModel<CrisisViewModel> = await save(timer, "1");
 
-		if (savedCrisis) {
+		if (savedCrisis.success) {
 			toast("Crise terminée !");
 		}
 
