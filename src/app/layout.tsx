@@ -1,5 +1,3 @@
-import "./globals.css";
-
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat } from "next/font/google";
 
@@ -9,6 +7,8 @@ import { TailwindIndicator } from "@/vue/components/utils/tailwind-indicator";
 import { PWAProvider } from "@/vue/providers/pwa.provider";
 import { ThemeProvider } from "@/vue/providers/theme.provider";
 import { SiteConfig } from "@/vue/site-config";
+
+import "./globals.css";
 
 const montserratSans = Montserrat({
 	variable: "--font-montserrat-sans",

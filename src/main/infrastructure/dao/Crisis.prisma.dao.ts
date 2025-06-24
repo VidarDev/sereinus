@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-import { CrisisDTO } from "@/main/infrastructure/dto/CrisisDTO";
+import { CrisisDTO } from "@/main/infrastructure/dto/Crisis.dto";
 
 export class CrisisPrismaDao {
 	private readonly prisma: PrismaClient;

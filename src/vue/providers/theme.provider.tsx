@@ -1,7 +1,7 @@
 "use client";
 
-import { ThemeProvider as NextThemeProvider, useTheme as useNextTheme } from "next-themes";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { ThemeProvider as NextThemeProvider, useTheme as useNextTheme } from "next-themes";
 
 import { metaTagsService } from "@/main/presentation/services/meta-tags.service";
 import { useColorScheme } from "@/vue/hooks/useColorScheme";

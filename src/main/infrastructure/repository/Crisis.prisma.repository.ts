@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { CrisisRepository } from "@/main/application/port/Crisis.repository.interface";
 import { Crisis } from "@/main/domain/Crisis";
 import { CrisisPrismaDao } from "@/main/infrastructure/dao/Crisis.prisma.dao";
-import { CrisisDTO } from "@/main/infrastructure/dto/CrisisDTO";
+import { CrisisDTO } from "@/main/infrastructure/dto/Crisis.dto";
 
 export class CrisisPrismaRepository implements CrisisRepository {
 	private readonly crisisPrismaDao: CrisisPrismaDao;

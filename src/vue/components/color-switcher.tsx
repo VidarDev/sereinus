@@ -1,7 +1,7 @@
 "use client";
 
-import { Palette, Sparkles } from "lucide-react";
 import { useMemo } from "react";
+import { Palette, Sparkles } from "lucide-react";
 
 import { BaseSwitcher } from "@/vue/components/theme-switcher-base";
 import type { ThemeConfig } from "@/vue/lib/theme";
