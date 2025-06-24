@@ -9,8 +9,6 @@ const applicationContainer = createContainer();
 applicationContainer.load(Symbol("infrastructureModule"), createInfrastructureModule());
 applicationContainer.load(Symbol("applicationModule"), createApplicationModule());
 
-export const getInjection = <K extends keyof typeof DI_SYMBOLS, I = unknown, O = unknown>(
-	symbol: K
-): DiReturnTypes<I, O>[K] => {
-	return applicationContainer.get<DiReturnTypes<I, O>[K]>(DI_SYMBOLS[symbol]);
+export const getInjection = <K extends keyof typeof DI_SYMBOLS>(symbol: K): DiReturnTypes[K] => {
+	return applicationContainer.get<DiReturnTypes[K]>(DI_SYMBOLS[symbol]);
 };

@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 
 import { CrisisRepository } from "@/main/application/port/Crisis.repository.interface";
 import { Presenter } from "@/main/application/port/Presenter.interface";
-import { GetAllCrisis } from "@/main/application/usecase/GetAllCrisis";
+import { GetAllCrises } from "@/main/application/usecase/GetAllCrises";
 import { Crisis } from "@/main/domain/Crisis";
 
 describe("Get All Crisis", () => {
-	let getAllCrisis: GetAllCrisis<unknown>;
+	let getAllCrisis: GetAllCrises<unknown>;
 	let crisisRepository: CrisisRepository;
 	let crisesPresenter: Presenter<Crisis[], unknown>;
 
@@ -27,7 +27,7 @@ describe("Get All Crisis", () => {
 			update: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>()
 		};
 
-		getAllCrisis = new GetAllCrisis<unknown>(crisisRepository, crisesPresenter);
+		getAllCrisis = new GetAllCrises<unknown>(crisisRepository, crisesPresenter);
 	});
 
 	test("Given a userId, when getting its crisis, then they are presented", async () => {
