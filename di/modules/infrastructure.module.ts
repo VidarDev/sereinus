@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 
 import { CrisisPrismaDao } from "@/main/infrastructure/dao/Crisis.prisma.dao";
 import { CrisisPrismaRepository } from "@/main/infrastructure/repository/Crisis.prisma.repository";
-
 import { DI_SYMBOLS } from "../types";
 
 export const createInfrastructureModule = () => {
