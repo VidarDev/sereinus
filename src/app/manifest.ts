@@ -5,7 +5,7 @@ import { SiteConfig } from "@/vue/site-config";
 export default function manifest(): MetadataRoute.Manifest {
 	return {
 		theme_color: SiteConfig.brand.theme_color,
-		background_color: SiteConfig.brand.background_color,
+		background_color: SiteConfig.brand.splash_background_color,
 		start_url: "/",
 		display: "standalone",
 		orientation: "portrait",

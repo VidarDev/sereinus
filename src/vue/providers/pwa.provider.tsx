@@ -1,32 +1,53 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useMemo } from "react";
 
-import type { Platform } from "@/vue/types/pwa";
+import { usePWAInstall } from "@/vue/hooks/usePWAInstall";
+import { usePWAStatus } from "@/vue/hooks/usePWAStatus";
+import { usePWAUpdate } from "@/vue/hooks/usePWAUpdate";
+import type { Platform, PWAInstallationResult } from "@/vue/types/pwa";
 
 export interface BeforeInstallPromptEvent extends Event {
 	prompt(): Promise<void>;
 	userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-interface NavigatorWithStandalone extends Navigator {
-	standalone?: boolean;
-}
-
 interface PWAState {
+	// Installation state
 	isOnline: boolean;
 	isInstalled: boolean;
 	canInstall: boolean;
-	hasUpdate: boolean;
-	isRegistered: boolean;
 	platform: Platform;
 	isInstalling: boolean;
+	isLoadingInstall: boolean;
+	requiresManualInstall: boolean;
+	canUsePrompt: boolean;
+
+	// Update state
+	hasUpdate: boolean;
+	isRegistered: boolean;
 	isUpdating: boolean;
+	isRegistering: boolean;
+	hasRegistrationError: boolean;
+	canRetryRegistration: boolean;
+	isFullyOperational: boolean;
+	serviceWorkerState: "registered" | "registering" | "not-registered";
+	version: string | null;
+	registrationError: string | null;
+
+	// Derived state
+	isPWACapable: boolean;
+	needsAttention: boolean;
+	isOfflineReady: boolean;
+	overallState: "loading" | "ready" | "error" | "installing" | "updating";
 }
 
 interface PWAContextValue extends PWAState {
-	installApp: () => Promise<boolean>;
+	installApp: () => Promise<PWAInstallationResult>;
 	activateUpdate: () => Promise<boolean>;
+	retryRegistration: () => Promise<void>;
+	refreshInstallState: () => Promise<void>;
+	getInstallInstructions: () => string;
 }
 
 const PWAContext = createContext<PWAContextValue | null>(null);
@@ -36,206 +57,116 @@ interface PWAProviderProps {
 }
 
 export function PWAProvider({ children }: PWAProviderProps) {
-	const [state, setState] = useState<PWAState>({
-		isOnline: true,
-		isInstalled: false,
-		canInstall: false,
-		hasUpdate: false,
-		isRegistered: false,
-		platform: "other",
-		isInstalling: false,
-		isUpdating: false
-	});
+	const installationHook = usePWAInstall();
+	const statusHook = usePWAStatus();
+	const updateHook = usePWAUpdate();
 
-	const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+	// Memoized context value to prevent unnecessary re-renders
+	const contextValue: PWAContextValue = useMemo(() => {
+		// Derive overall state
+		const getOverallState = (): PWAState["overallState"] => {
+			if (installationHook.isLoading || updateHook.isRegistering) return "loading";
+			if (installationHook.isInstalling) return "installing";
+			if (updateHook.isUpdating) return "updating";
+			if (updateHook.hasRegistrationError && !updateHook.isRegistered) return "error";
+			return "ready";
+		};
 
-	// Detect platform
-	const detectPlatform = (): Platform => {
-		if (typeof window === "undefined") return "other";
+		// Check if PWA needs attention
+		const needsAttention =
+			updateHook.hasUpdate ||
+			(!updateHook.isRegistered && installationHook.canInstall) ||
+			updateHook.hasRegistrationError;
 
-		const userAgent = window.navigator.userAgent.toLowerCase();
+		return {
+			// Installation state
+			isOnline: statusHook.isOnline,
+			isInstalled: installationHook.isInstalled,
+			canInstall: installationHook.canInstall,
+			platform: installationHook.platform,
+			isInstalling: installationHook.isInstalling,
+			isLoadingInstall: installationHook.isLoading,
+			requiresManualInstall: installationHook.requiresManualInstall,
+			canUsePrompt: installationHook.canUsePrompt,
 
-		if (userAgent.includes("edg/")) return "edge";
-		if (userAgent.includes("chrome") && !userAgent.includes("edg/")) return "chrome";
-		if (userAgent.includes("firefox")) return "firefox";
-		if (userAgent.includes("safari") && !userAgent.includes("chrome")) return "safari";
+			// Update state
+			hasUpdate: updateHook.hasUpdate,
+			isRegistered: updateHook.isRegistered,
+			isUpdating: updateHook.isUpdating,
+			isRegistering: updateHook.isRegistering,
+			hasRegistrationError: updateHook.hasRegistrationError,
+			canRetryRegistration: updateHook.canRetryRegistration,
+			isFullyOperational: updateHook.isFullyOperational,
+			serviceWorkerState: updateHook.serviceWorkerState as "registered" | "registering" | "not-registered",
+			version: updateHook.version,
+			registrationError: updateHook.registrationError,
 
-		return "other";
-	};
+			// Derived state
+			isPWACapable: installationHook.isPWACapable,
+			needsAttention,
+			isOfflineReady: updateHook.isRegistered && installationHook.isInstalled,
+			overallState: getOverallState(),
 
-	// Check if app is installed
-	const isAppInstalled = (): boolean => {
-		if (typeof window === "undefined") return false;
+			// Actions
+			installApp: async (): Promise<PWAInstallationResult> => {
+				const result = await installationHook.installApp();
 
-		// Standalone mode (PWA installed)
-		if (window.matchMedia("(display-mode: standalone)").matches) return true;
-
-		// iOS Safari
-		if ("standalone" in window.navigator) {
-			return (window.navigator as NavigatorWithStandalone).standalone as boolean;
-		}
-
-		// Android Chrome
-		return window.matchMedia("(display-mode: minimal-ui)").matches;
-	};
-
-	// Register service worker
-	const registerServiceWorker = async () => {
-		if (!("serviceWorker" in navigator)) return false;
-
-		try {
-			const registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
-
-			// Listen for updates
-			registration.addEventListener("updatefound", () => {
-				const newWorker = registration.installing;
-				if (newWorker) {
-					newWorker.addEventListener("statechange", () => {
-						if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-							setState((prev) => ({ ...prev, hasUpdate: true }));
-						}
-					});
+				// Provide user feedback for Safari manual installation
+				if (installationHook.platform === "safari" && installationHook.requiresManualInstall) {
+					console.log("[PWA Provider] Safari manual installation required");
 				}
-			});
 
-			setState((prev) => ({ ...prev, isRegistered: true }));
-			return true;
-		} catch (error) {
-			console.error("Service Worker registration failed:", error);
-			return false;
-		}
-	};
+				return result;
+			},
 
-	// Install app
-	const installApp = async (): Promise<boolean> => {
-		if (!deferredPrompt) return false;
+			activateUpdate: async (): Promise<boolean> => {
+				return updateHook.activateUpdate();
+			},
 
-		setState((prev) => ({ ...prev, isInstalling: true }));
+			retryRegistration: async (): Promise<void> => {
+				await updateHook.retryRegistration();
+			},
 
-		try {
-			await deferredPrompt.prompt();
-			const { outcome } = await deferredPrompt.userChoice;
+			refreshInstallState: async (): Promise<void> => {
+				await installationHook.updateInstallationState();
+			},
 
-			setDeferredPrompt(null);
-
-			if (outcome === "accepted") {
-				setState((prev) => ({ ...prev, isInstalled: true, canInstall: false }));
-				return true;
-			}
-
-			return false;
-		} catch (error) {
-			console.error("Installation failed:", error);
-			return false;
-		} finally {
-			setState((prev) => ({ ...prev, isInstalling: false }));
-		}
-	};
-
-	// Activate update
-	const activateUpdate = async (): Promise<boolean> => {
-		if (!("serviceWorker" in navigator)) return false;
-
-		setState((prev) => ({ ...prev, isUpdating: true }));
-
-		try {
-			const registration = await navigator.serviceWorker.getRegistration();
-
-			if (registration?.waiting) {
-				const messageChannel = new MessageChannel();
-
-				const responsePromise = new Promise<boolean>((resolve) => {
-					messageChannel.port1.onmessage = (event) => {
-						resolve(event.data.success === true);
-					};
-
-					setTimeout(() => resolve(false), 5000);
-				});
-
-				registration.waiting.postMessage({ type: "SKIP_WAITING" }, [messageChannel.port2]);
-
-				const success = await responsePromise;
-				if (success) {
-					window.location.reload();
-				}
-				return success;
-			}
-
-			return false;
-		} catch (error) {
-			console.error("Update activation failed:", error);
-			return false;
-		} finally {
-			setState((prev) => ({ ...prev, isUpdating: false }));
-		}
-	};
-
-	// Initialize PWA
-	useEffect(() => {
-		const platform = detectPlatform();
-		const isInstalled = isAppInstalled();
-		const isOnline = navigator.onLine;
-
-		setState((prev) => ({
-			...prev,
-			platform,
-			isInstalled,
-			isOnline,
-			canInstall: !isInstalled && (platform === "chrome" || platform === "edge" || platform === "safari")
-		}));
-
-		// Register service worker
-		registerServiceWorker();
-
-		// Handle beforeinstallprompt
-		const handleBeforeInstallPrompt = (event: Event) => {
-			event.preventDefault();
-			setDeferredPrompt(event as BeforeInstallPromptEvent);
-			setState((prev) => ({ ...prev, canInstall: true }));
-		};
-
-		// Handle app installed
-		const handleAppInstalled = () => {
-			setDeferredPrompt(null);
-			setState((prev) => ({ ...prev, isInstalled: true, canInstall: false }));
-		};
-
-		// Handle online/offline
-		const handleOnline = () => setState((prev) => ({ ...prev, isOnline: true }));
-		const handleOffline = () => setState((prev) => ({ ...prev, isOnline: false }));
-
-		// Handle service worker controller change
-		const handleControllerChange = () => {
-			window.location.reload();
-		};
-
-		// Add event listeners
-		window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-		window.addEventListener("appinstalled", handleAppInstalled);
-		window.addEventListener("online", handleOnline);
-		window.addEventListener("offline", handleOffline);
-
-		if ("serviceWorker" in navigator) {
-			navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
-		}
-
-		return () => {
-			window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-			window.removeEventListener("appinstalled", handleAppInstalled);
-			window.removeEventListener("online", handleOnline);
-			window.removeEventListener("offline", handleOffline);
-
-			if ("serviceWorker" in navigator) {
-				navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
+			getInstallInstructions: (): string => {
+				return installationHook.getInstallInstructions();
 			}
 		};
-	}, []);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		// Installation hook dependencies
+		installationHook.isInstalled,
+		installationHook.canInstall,
+		installationHook.platform,
+		installationHook.isInstalling,
+		installationHook.isLoading,
+		installationHook.requiresManualInstall,
+		installationHook.canUsePrompt,
+		installationHook.isPWACapable,
+		installationHook.installApp,
+		installationHook.updateInstallationState,
+		installationHook.getInstallInstructions,
 
-	const contextValue: PWAContextValue = {
-		...state,
-		installApp,
-		activateUpdate
-	};
+		// Status hook dependencies
+		statusHook.isOnline,
+
+		// Update hook dependencies
+		updateHook.hasUpdate,
+		updateHook.isRegistered,
+		updateHook.isUpdating,
+		updateHook.isRegistering,
+		updateHook.hasRegistrationError,
+		updateHook.canRetryRegistration,
+		updateHook.isFullyOperational,
+		updateHook.serviceWorkerState,
+		updateHook.version,
+		updateHook.registrationError,
+		updateHook.activateUpdate,
+		updateHook.retryRegistration
+	]);
 
 	return <PWAContext.Provider value={contextValue}>{children}</PWAContext.Provider>;
 }

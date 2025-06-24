@@ -6,7 +6,6 @@ import { Geist_Mono, Montserrat } from "next/font/google";
 import { Toaster } from "@/vue/components/toaster";
 import { PWAIndicator } from "@/vue/components/utils/pwa-indicator";
 import { TailwindIndicator } from "@/vue/components/utils/tailwind-indicator";
-import { ThemeScript } from "@/vue/components/utils/theme-script";
 import { PWAProvider } from "@/vue/providers/pwa.provider";
 import { ThemeProvider } from "@/vue/providers/theme.provider";
 import { SiteConfig } from "@/vue/site-config";
@@ -44,9 +43,6 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="fr" suppressHydrationWarning>
-			<head>
-				<ThemeScript />
-			</head>
 			<body
 				suppressHydrationWarning
 				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative min-h-[100dvh] antialiased`}
