@@ -52,7 +52,7 @@ export default function RootLayout({
 						<Toaster />
 						<TailwindIndicator />
 						<PWAIndicator />
-						<main className="p-4">{children}</main>
+						<main className="flex min-h-[100dvh] flex-col px-8 py-12">{children}</main>
 					</PWAProvider>
 				</ThemeProvider>
 			</body>
