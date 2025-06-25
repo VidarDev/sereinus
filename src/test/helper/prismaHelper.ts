@@ -1,3 +1,4 @@
+import type { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { Client } from "pg";
 
@@ -31,7 +32,8 @@ export const setupTestDatabase = async () => {
 		stdio: "inherit"
 	});
 
-	await getInjection("PrismaClient").crisis.createMany({
+	const prisma = getInjection("PrismaClient") as PrismaClient;
+	await prisma.crisis.createMany({
 		data: [
 			{
 				userId: "1",
@@ -49,5 +51,6 @@ export const setupTestDatabase = async () => {
 };
 
 export const teardownTestDatabase = async () => {
-	await getInjection("PrismaClient").$disconnect();
+	const prisma = getInjection("PrismaClient") as PrismaClient;
+	await prisma.$disconnect();
 };

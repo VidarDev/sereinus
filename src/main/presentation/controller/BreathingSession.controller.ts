@@ -3,15 +3,19 @@ import {
 	ControlBreathingSessionRequest
 } from "@/main/application/usecase/ControlBreathingSession";
 import { GetBreathingProtocols, GetBreathingProtocolsRequest } from "@/main/application/usecase/GetBreathingProtocols";
-import { StartBreathingSession, StartBreathingSessionRequest } from "@/main/application/usecase/StartBreathingSession";
+import {
+	StartBreathingSession,
+	StartBreathingSessionRequest,
+	StartBreathingSessionResponse
+} from "@/main/application/usecase/StartBreathingSession";
 
 export class BreathingSessionController {
-	private readonly startBreathingSession: StartBreathingSession<unknown>;
+	private readonly startBreathingSession: StartBreathingSession;
 	private readonly controlBreathingSession: ControlBreathingSession<unknown>;
 	private readonly getBreathingProtocols: GetBreathingProtocols<unknown>;
 
 	constructor(
-		startBreathingSession: StartBreathingSession<unknown>,
+		startBreathingSession: StartBreathingSession,
 		controlBreathingSession: ControlBreathingSession<unknown>,
 		getBreathingProtocols: GetBreathingProtocols<unknown>
 	) {
@@ -20,7 +24,7 @@ export class BreathingSessionController {
 		this.getBreathingProtocols = getBreathingProtocols;
 	}
 
-	public async startSession(request: StartBreathingSessionRequest): Promise<unknown> {
+	public async startSession(request: StartBreathingSessionRequest): Promise<StartBreathingSessionResponse> {
 		return this.startBreathingSession.execute(request);
 	}
 

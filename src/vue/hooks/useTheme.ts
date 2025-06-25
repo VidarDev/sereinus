@@ -13,6 +13,12 @@ export const useTheme = (): UseThemeReturn => {
 			setThemeState(newTheme);
 			localStorage.setItem(THEME_STORAGE_KEY, newTheme);
 			document.documentElement.setAttribute("data-theme", newTheme);
+
+			window.dispatchEvent(
+				new CustomEvent("theme-changed", {
+					detail: { theme: newTheme }
+				})
+			);
 		} catch (error) {
 			console.error("Failed to save theme preference:", error);
 		}
@@ -39,6 +45,18 @@ export const useTheme = (): UseThemeReturn => {
 			setIsLoading(false);
 		}
 	}, []);
+
+	useEffect(() => {
+		const handleThemeChange = (e: CustomEvent) => {
+			const { theme: newTheme } = e.detail;
+			if (newTheme && newTheme !== theme) {
+				setThemeState(newTheme);
+			}
+		};
+
+		window.addEventListener("theme-changed", handleThemeChange as EventListener);
+		return () => window.removeEventListener("theme-changed", handleThemeChange as EventListener);
+	}, [theme]);
 
 	const getCurrentThemeColors = useCallback(() => {
 		return THEMES.find((t) => t.name === theme);

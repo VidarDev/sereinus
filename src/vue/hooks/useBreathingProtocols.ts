@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-// Types selon les spécifications
 export interface BreathingProtocol {
 	name: string;
 	id: string;
@@ -17,7 +16,6 @@ export interface BreathingProtocol {
 	isScientificallyValidated: boolean;
 }
 
-// Protocoles scientifiquement validés selon vos spécifications
 export const BREATHING_PROTOCOLS: Record<string, BreathingProtocol> = {
 	BOX_BREATHING: {
 		id: "box-breathing",
@@ -50,7 +48,6 @@ export const BREATHING_PROTOCOLS: Record<string, BreathingProtocol> = {
 
 export const DEFAULT_PROTOCOL = BREATHING_PROTOCOLS.BOX_BREATHING;
 
-// Recommandations selon les situations
 export const PROTOCOL_RECOMMENDATIONS = {
 	ACUTE_ANXIETY: [BREATHING_PROTOCOLS.BOX_BREATHING, BREATHING_PROTOCOLS.TECHNIQUE_478],
 	RELAXATION: [BREATHING_PROTOCOLS.TECHNIQUE_478, BREATHING_PROTOCOLS.COHERENT_BREATHING],

@@ -6,7 +6,7 @@ export interface BreathingSessionViewModel {
 	protocolId: string;
 	protocolName: string;
 	startTime: Date;
-	endTime?: Date;
+	endTime?: Date | undefined;
 	duration: number;
 	currentPhase: "inhale" | "hold1" | "exhale" | "hold2" | "idle";
 	cycleCount: number;

@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat } from "next/font/google";
 
-import { AutoInstallPrompt } from "@/vue/components/PWA/install-prompt";
 import { Toaster } from "@/vue/components/toaster";
 import { NoFOUC } from "@/vue/components/utils/no-fouc";
+import { AutoInstallPrompt } from "@/vue/features/pwa/components/installPrompt";
+import { AudioHapticProvider } from "@/vue/providers/audio-haptic.provider";
 import { PWAProvider } from "@/vue/providers/pwa.provider";
 import { ThemeProvider } from "@/vue/providers/theme.provider";
 import { SiteConfig } from "@/vue/site-config";
@@ -76,11 +77,13 @@ export default function RootLayout({
 				<NoFOUC>
 					<PWAProvider>
 						<ThemeProvider>
-							<main className="flex flex-1 flex-col px-4 py-4">{children}</main>
-							<Toaster />
-							{/* <TailwindIndicator />
-							<PWAIndicator /> */}
-							<AutoInstallPrompt />
+							<AudioHapticProvider>
+								<main className="flex flex-1 flex-col">{children}</main>
+								<Toaster />
+								{/* <TailwindIndicator />
+								<PWAIndicator /> */}
+								<AutoInstallPrompt />
+							</AudioHapticProvider>
 						</ThemeProvider>
 					</PWAProvider>
 				</NoFOUC>

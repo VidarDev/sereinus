@@ -1,3 +1,5 @@
+import { Clock } from "./services/clock.interface";
+import { UUIDGenerator } from "./services/uuid-generator.interface";
 import { BreathingProtocol } from "./BreathingProtocol";
 
 export type BreathingPhaseType = "inhale" | "hold1" | "exhale" | "hold2" | "idle";
@@ -18,16 +20,18 @@ export class BreathingSession {
 	private _cycleCount: number;
 	private _isActive: boolean;
 	private _isPaused: boolean;
+	private readonly _clock: Clock;
 
-	constructor(protocol: BreathingProtocol, settings: SessionSettings) {
-		this._id = crypto.randomUUID();
+	constructor(protocol: BreathingProtocol, settings: SessionSettings, uuidGenerator: UUIDGenerator, clock: Clock) {
+		this._id = uuidGenerator.generate();
 		this._protocol = protocol;
 		this._settings = settings;
-		this._startTime = new Date();
+		this._startTime = clock.now();
 		this._currentPhase = "idle";
 		this._cycleCount = 0;
 		this._isActive = false;
 		this._isPaused = false;
+		this._clock = clock;
 	}
 
 	get id(): string {
@@ -67,7 +71,7 @@ export class BreathingSession {
 	}
 
 	get duration(): number {
-		const endTime = this._endTime ?? new Date();
+		const endTime = this._endTime ?? this._clock.now();
 		return endTime.getTime() - this._startTime.getTime();
 	}
 
@@ -97,7 +101,7 @@ export class BreathingSession {
 	public stop(): void {
 		this._isActive = false;
 		this._isPaused = false;
-		this._endTime = new Date();
+		this._endTime = this._clock.now();
 		this._currentPhase = "idle";
 	}
 
@@ -114,12 +118,13 @@ export class BreathingSession {
 			this._cycleCount++;
 		}
 
-		this._currentPhase = phases[nextIndex];
+		const nextPhase = phases[nextIndex];
+		if (nextPhase) {
+			this._currentPhase = nextPhase;
+		}
 	}
 
 	public updateSettings(newSettings: Partial<SessionSettings>): SessionSettings {
-		// Note: Dans une vraie implémentation, il faudrait créer une nouvelle session
-		// Ici on retourne les nouveaux settings pour la cohérence du pattern
 		return { ...this._settings, ...newSettings };
 	}
 

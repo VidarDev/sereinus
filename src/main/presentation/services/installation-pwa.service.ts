@@ -6,7 +6,7 @@ import type {
 	Platform,
 	PWAInstallationResult,
 	PWAInstallationState
-} from "@/vue/types/pwa";
+} from "@/vue/features/pwa/types/pwa";
 
 export class PWAInstallationService {
 	private static instance: PWAInstallationService | null = null;

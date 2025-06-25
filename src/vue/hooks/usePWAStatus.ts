@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import type { PWAStatus } from "@/vue/features/pwa/types/pwa";
 import { usePWAInstall } from "@/vue/hooks/usePWAInstall";
 import { usePWAUpdate } from "@/vue/hooks/usePWAUpdate";
-import type { PWAStatus } from "@/vue/types/pwa";
 
 export function usePWAStatus() {
 	const [isOnline, setIsOnline] = useState(true);

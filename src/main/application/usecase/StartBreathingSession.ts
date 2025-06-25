@@ -1,45 +1,44 @@
 import { BreathingProtocolRepository } from "@/main/application/port/BreathingProtocol.repository.interface";
-import { BreathingSessionRepository } from "@/main/application/port/BreathingSession.repository.interface";
-import { Presenter } from "@/main/application/port/Presenter.interface";
-import { BreathingSession, SessionSettings } from "@/main/domain/BreathingSession";
+import { BreathingSession } from "@/main/domain/BreathingSession";
+import { Clock } from "@/main/domain/services/clock.interface";
+import { UUIDGenerator } from "@/main/domain/services/uuid-generator.interface";
+import { BreathingSessionRepository } from "../port/BreathingSession.repository.interface";
 
 export interface StartBreathingSessionRequest {
 	userId: string;
 	protocolId: string;
-	settings: SessionSettings;
+	settings: {
+		hapticEnabled: boolean;
+		soundEnabled: boolean;
+		wakeLockEnabled: boolean;
+	};
 }
 
-export class StartBreathingSession<T> {
-	private readonly protocolRepository: BreathingProtocolRepository;
-	private readonly sessionRepository: BreathingSessionRepository;
-	private readonly presenter: Presenter<BreathingSession, T>;
+export interface StartBreathingSessionResponse {
+	sessionId: string;
+}
 
+export class StartBreathingSession {
 	constructor(
-		protocolRepository: BreathingProtocolRepository,
-		sessionRepository: BreathingSessionRepository,
-		presenter: Presenter<BreathingSession, T>
-	) {
-		this.protocolRepository = protocolRepository;
-		this.sessionRepository = sessionRepository;
-		this.presenter = presenter;
-	}
+		private readonly protocolRepository: BreathingProtocolRepository,
+		private readonly sessionRepository: BreathingSessionRepository,
+		private readonly uuidGenerator: UUIDGenerator,
+		private readonly clock: Clock
+	) {}
 
-	async execute(request: StartBreathingSessionRequest): Promise<T> {
-		try {
-			const protocol = await this.protocolRepository.findById(request.protocolId);
-
-			if (!protocol) {
-				return this.presenter.error("Protocol not found");
-			}
-
-			const session = new BreathingSession(protocol, request.settings);
-			session.start();
-
-			await this.sessionRepository.save(request.userId, session);
-
-			return this.presenter.ok(session);
-		} catch (error) {
-			return this.presenter.error((error as Error).message);
+	public async execute(request: StartBreathingSessionRequest): Promise<StartBreathingSessionResponse> {
+		const protocol = await this.protocolRepository.findById(request.protocolId);
+		if (!protocol) {
+			throw new Error(`Protocol not found: ${request.protocolId}`);
 		}
+
+		const session = new BreathingSession(protocol, request.settings, this.uuidGenerator, this.clock);
+		session.start();
+
+		await this.sessionRepository.save(request.userId, session);
+
+		return {
+			sessionId: session.id
+		};
 	}
 }

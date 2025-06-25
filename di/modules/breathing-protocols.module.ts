@@ -15,12 +15,10 @@ export const createBreathingProtocolsModule = () => {
 
 	// Repositories
 	breathingProtocolsModule.bind(DI_SYMBOLS.BreathingProtocolRepository).toClass(BreathingProtocolMemoryRepository);
-
 	breathingProtocolsModule.bind(DI_SYMBOLS.BreathingSessionRepository).toClass(BreathingSessionMemoryRepository);
 
 	// Presenters
 	breathingProtocolsModule.bind(DI_SYMBOLS.BreathingProtocolsUIPresenter).toClass(BreathingProtocolsUIPresenter);
-
 	breathingProtocolsModule.bind(DI_SYMBOLS.BreathingSessionUIPresenter).toClass(BreathingSessionUIPresenter);
 
 	// Use Cases
@@ -30,7 +28,6 @@ export const createBreathingProtocolsModule = () => {
 			DI_SYMBOLS.BreathingProtocolRepository,
 			DI_SYMBOLS.BreathingProtocolsUIPresenter
 		]);
-
 	breathingProtocolsModule
 		.bind(DI_SYMBOLS.StartBreathingSession)
 		.toClass(StartBreathingSession, [
@@ -38,7 +35,6 @@ export const createBreathingProtocolsModule = () => {
 			DI_SYMBOLS.BreathingSessionRepository,
 			DI_SYMBOLS.BreathingSessionUIPresenter
 		]);
-
 	breathingProtocolsModule
 		.bind(DI_SYMBOLS.ControlBreathingSession)
 		.toClass(ControlBreathingSession, [

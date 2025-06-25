@@ -7,25 +7,15 @@ interface NoFOUCProps {
 }
 
 export function NoFOUC({ children }: NoFOUCProps) {
-	const [isThemeLoaded, setIsThemeLoaded] = useState(false);
+	const [isMounted, setIsMounted] = useState(false);
 
 	useEffect(() => {
-		const timer = setTimeout(() => {
-			setIsThemeLoaded(true);
-		}, 50);
-
-		return () => clearTimeout(timer);
+		setIsMounted(true);
 	}, []);
 
-	if (!isThemeLoaded) {
+	if (!isMounted) {
 		return (
-			<div
-				className="flex h-screen w-full items-center justify-center"
-				style={{
-					backgroundColor: "var(--background)",
-					color: "var(--foreground)"
-				}}
-			>
+			<div className="bg-background text-foreground flex h-screen w-full items-center justify-center">
 				<div className="animate-pulse">
 					<div className="h-8 w-8 rounded-full bg-white/20"></div>
 				</div>

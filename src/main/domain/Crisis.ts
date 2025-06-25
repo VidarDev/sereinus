@@ -1,7 +1,7 @@
 export class Crisis {
 	private readonly _datetime: Date;
 	private readonly _duration: number;
-	private readonly _note?: string;
+	private readonly _note: string | undefined;
 
 	constructor(datetime: Date, duration: number, note?: string) {
 		this._datetime = datetime;

@@ -16,7 +16,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('push', (event) => {
 	if (!event.data) return;
-
+	
 	try {
 		const data = event.data.json();
 		const options = {
@@ -27,7 +27,7 @@ self.addEventListener('push', (event) => {
 			data: data.data || {},
 			actions: data.actions || []
 		};
-
+		
 		event.waitUntil(
 			self.registration.showNotification(data.title || 'Sereinus', options)
 		);

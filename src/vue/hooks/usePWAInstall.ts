@@ -3,7 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { PWAInstallationService } from "@/main/presentation/services/installation-pwa.service";
-import type { BeforeInstallPromptEvent, PWAInstallationResult, PWAInstallationState } from "@/vue/types/pwa";
+import type {
+	BeforeInstallPromptEvent,
+	PWAInstallationResult,
+	PWAInstallationState
+} from "@/vue/features/pwa/types/pwa";
 
 const installationService = PWAInstallationService.getInstance();
 

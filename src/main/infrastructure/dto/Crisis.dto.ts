@@ -2,7 +2,7 @@ export class CrisisDTO {
 	private readonly _userId: string;
 	private readonly _datetime: Date;
 	private readonly _duration: number;
-	private readonly _note?: string;
+	private readonly _note: string | undefined;
 
 	constructor(userId: string, datetime: Date, duration: number, note?: string) {
 		this._userId = userId;
@@ -24,6 +24,6 @@ export class CrisisDTO {
 	}
 
 	get note(): string | undefined {
-		return this._note ?? undefined;
+		return this._note;
 	}
 }

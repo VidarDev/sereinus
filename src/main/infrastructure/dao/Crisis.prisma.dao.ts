@@ -27,7 +27,7 @@ export class CrisisPrismaDao {
 				userId: crisis.userId,
 				datetime: crisis.datetime,
 				duration: crisis.duration,
-				note: crisis.note
+				note: crisis.note ?? null
 			}
 		});
 	}
@@ -41,7 +41,7 @@ export class CrisisPrismaDao {
 				}
 			},
 			data: {
-				note: crisis.note
+				note: crisis.note ?? null
 			}
 		});
 	}

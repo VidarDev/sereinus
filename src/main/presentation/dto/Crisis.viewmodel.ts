@@ -1,9 +1,9 @@
 export class CrisisViewModel {
-	readonly formatedDate: string;
-	readonly datetime: Date;
-	readonly time: string;
-	readonly duration: string;
-	readonly note?: string;
+	public readonly formatedDate: string;
+	public readonly datetime: Date;
+	public readonly time: string;
+	public readonly duration: string;
+	public readonly note: string | undefined;
 
 	constructor(formatedDate: string, date: Date, time: string, duration: string, note?: string) {
 		this.formatedDate = formatedDate;

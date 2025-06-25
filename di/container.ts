@@ -1,16 +1,26 @@
 import { createContainer } from "@evyweb/ioctopus";
+import { PrismaClient } from "@prisma/client";
 
-import { createApplicationModule } from "@/di/modules/application.module";
+import { createApplicationModule } from "./modules/application.module";
 import { createBreathingProtocolsModule } from "./modules/breathing-protocols.module";
 import { createInfrastructureModule } from "./modules/infrastructure.module";
 import { DI_SYMBOLS, DiReturnTypes } from "./types";
 
-const applicationContainer = createContainer();
+const appContainer = createContainer();
 
-applicationContainer.load(Symbol("infrastructureModule"), createInfrastructureModule());
-applicationContainer.load(Symbol("applicationModule"), createApplicationModule());
-applicationContainer.load(Symbol("breathingProtocolsModule"), createBreathingProtocolsModule());
+appContainer.bind(DI_SYMBOLS.PrismaClient).toClass(PrismaClient);
 
-export const getInjection = <K extends keyof typeof DI_SYMBOLS>(symbol: K): DiReturnTypes[K] => {
-	return applicationContainer.get<DiReturnTypes[K]>(DI_SYMBOLS[symbol]);
+appContainer.load(Symbol("infrastructureModule"), createInfrastructureModule());
+
+appContainer.load(Symbol("breathingProtocolsModule"), createBreathingProtocolsModule());
+appContainer.load(Symbol("applicationModule"), createApplicationModule());
+
+export const getInjection = <K extends keyof DiReturnTypes>(symbol: K): DiReturnTypes[K] => {
+	return appContainer.get<DiReturnTypes[K]>(DI_SYMBOLS[symbol]);
 };
+
+export function getInjectionBySymbol<T>(symbol: symbol): T {
+	return appContainer.get<T>(symbol);
+}
+
+export { appContainer };

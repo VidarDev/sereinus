@@ -2,9 +2,10 @@
 
 import { motion } from "motion/react";
 
-import { InstallManager } from "@/vue/components/PWA/install-manager";
-import { Logo } from "@/vue/components/SVG/logo";
+import { Logo } from "@/vue/components/svg/logo";
+import { InstallManager } from "@/vue/features/pwa/components/installManager";
 import { useTheme } from "@/vue/providers/theme.provider";
+import { SiteConfig } from "@/vue/site-config";
 
 export default function HomePage() {
 	const { getCurrentThemeHex } = useTheme();
@@ -24,9 +25,9 @@ export default function HomePage() {
 					transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
 					className="flex flex-1 flex-col items-center justify-center text-center"
 				>
-					<Logo className="h-auto w-[500px] max-w-[80%]" color={themeHexColors?.primaryColor} />
+					<Logo className="h-auto w-[500px] max-w-[80%]" color={themeHexColors?.primaryColor || "#aee0ff"} />
 				</motion.div>
-				<h1 className="sr-only">Amai</h1>
+				<h1 className="sr-only">{SiteConfig.title}</h1>
 			</motion.div>
 
 			<motion.div
@@ -35,7 +36,7 @@ export default function HomePage() {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
 			>
-				<InstallManager mode="button" variant="primary" size="lg" className="h-12 w-full max-w-[400px]">
+				<InstallManager mode="button" variant="primary" size="lg" className="mb-4 h-12 w-full max-w-[400px]">
 					Installer l&apos;App
 				</InstallManager>
 			</motion.div>

@@ -12,12 +12,12 @@ export const createApplicationModule = () => {
 		.bind(DI_SYMBOLS.CrisisController)
 		.toClass(CrisisController, [
 			DI_SYMBOLS.CrisisRepository,
-			DI_SYMBOLS.ActionUiPresenter,
-			DI_SYMBOLS.CrisesUiPresenter
+			DI_SYMBOLS.ActionsUIPresenter,
+			DI_SYMBOLS.CrisesUIPresenter
 		]);
 
-	applicationModule.bind(DI_SYMBOLS.CrisesUiPresenter).toClass(CrisesUiPresenter);
-	applicationModule.bind(DI_SYMBOLS.ActionUiPresenter).toClass(ActionUiPresenter);
+	applicationModule.bind(DI_SYMBOLS.CrisesUIPresenter).toClass(CrisesUiPresenter);
+	applicationModule.bind(DI_SYMBOLS.ActionsUIPresenter).toClass(ActionUiPresenter);
 
 	return applicationModule;
 };
