@@ -1,2 +1,2 @@
-export { ThemeButton } from "./ThemeButton";
-export { ThemeSelector } from "./ThemeSelector";
+export { ThemeButton } from "./theme-button";
+export { ThemeSelector } from "./theme-selector";

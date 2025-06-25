@@ -5,7 +5,7 @@ import { memo, Suspense, useCallback } from "react";
 import type { ThemeName } from "@/vue/constants/themes";
 import { useTheme } from "@/vue/hooks/useTheme";
 import { cn } from "@/vue/lib/utils";
-import { ThemeButton } from "./ThemeButton";
+import { ThemeButton } from "./theme-button";
 
 interface ThemeSelectorProps {
 	className?: string;

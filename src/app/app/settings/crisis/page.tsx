@@ -21,7 +21,7 @@ export default function CrisisSettingsPage() {
 		<div className="relative flex w-full flex-1 flex-col gap-6">
 			<div className="flex w-full items-center justify-between">
 				<Button variant="ghost" size="icon" asChild>
-					<Link href="/app" className="h-8 w-8">
+					<Link href="/app" className="h-8 w-8 -translate-x-1">
 						<ChevronLeft className="!h-6 !w-6" />
 					</Link>
 				</Button>

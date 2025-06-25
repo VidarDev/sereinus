@@ -44,4 +44,13 @@ export interface UseThemeReturn {
 	setTheme: (theme: ThemeName) => void;
 	themes: readonly Theme[];
 	isLoading: boolean;
+	getCurrentThemeColors: () => Theme | undefined;
+	getCurrentThemeHex: () =>
+		| {
+				primaryColor: string;
+				backgroundColor: string;
+				primaryColorDark: string;
+				backgroundColorDark: string;
+		  }
+		| undefined;
 }

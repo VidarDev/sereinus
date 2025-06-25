@@ -25,19 +25,43 @@ export const useTheme = (): UseThemeReturn => {
 
 			if (savedTheme && isValidTheme) {
 				setThemeState(savedTheme);
-				document.documentElement.setAttribute("data-theme", savedTheme);
+				const currentDataTheme = document.documentElement.getAttribute("data-theme");
+				if (currentDataTheme !== savedTheme) {
+					document.documentElement.setAttribute("data-theme", savedTheme);
+				}
+			} else {
+				document.documentElement.setAttribute("data-theme", DEFAULT_THEME);
 			}
 		} catch (error) {
 			console.error("Failed to load theme preference:", error);
+			document.documentElement.setAttribute("data-theme", DEFAULT_THEME);
 		} finally {
 			setIsLoading(false);
 		}
 	}, []);
 
+	const getCurrentThemeColors = useCallback(() => {
+		return THEMES.find((t) => t.name === theme);
+	}, [theme]);
+
+	const getCurrentThemeHex = useCallback(() => {
+		const currentTheme = getCurrentThemeColors();
+		if (!currentTheme) return undefined;
+
+		return {
+			primaryColor: currentTheme.primaryColor,
+			backgroundColor: currentTheme.backgroundColor,
+			primaryColorDark: currentTheme.primaryColorDark,
+			backgroundColorDark: currentTheme.backgroundColorDark
+		};
+	}, [getCurrentThemeColors]);
+
 	return {
 		theme,
 		setTheme,
 		isLoading,
-		themes: THEMES
+		themes: THEMES,
+		getCurrentThemeColors,
+		getCurrentThemeHex
 	};
 };

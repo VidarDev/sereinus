@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat } from "next/font/google";
 
+import { AutoInstallPrompt } from "@/vue/components/PWA/install-prompt";
 import { Toaster } from "@/vue/components/toaster";
+import { NoFOUC } from "@/vue/components/utils/no-fouc";
 import { PWAIndicator } from "@/vue/components/utils/pwa-indicator";
 import { TailwindIndicator } from "@/vue/components/utils/tailwind-indicator";
 import { PWAProvider } from "@/vue/providers/pwa.provider";
@@ -52,19 +54,38 @@ export default function RootLayout({
 				<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"></meta>
 				<meta name="apple-mobile-web-app-capable" content="yes"></meta>
 				<meta name="theme-color" content={SiteConfig.brand.theme_color}></meta>
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `
+							(function() {
+								try {
+									const storedTheme = localStorage.getItem('app-theme');
+									const validThemes = ['blue', 'purple', 'brown'];
+									const theme = validThemes.includes(storedTheme) ? storedTheme : 'blue';
+									document.documentElement.setAttribute('data-theme', theme);
+								} catch (e) {
+									document.documentElement.setAttribute('data-theme', 'blue');
+								}
+							})();
+						`
+					}}
+				/>
 			</head>
 			<body
 				suppressHydrationWarning
 				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative flex flex-col antialiased`}
 			>
-				<PWAProvider>
-					<ThemeProvider>
-						<main className="flex flex-1 flex-col px-4 py-4">{children}</main>
-						<Toaster />
-						<TailwindIndicator />
-						<PWAIndicator />
-					</ThemeProvider>
-				</PWAProvider>
+				<NoFOUC>
+					<PWAProvider>
+						<ThemeProvider>
+							<main className="flex flex-1 flex-col px-4 py-4">{children}</main>
+							<Toaster />
+							<TailwindIndicator />
+							<PWAIndicator />
+							<AutoInstallPrompt />
+						</ThemeProvider>
+					</PWAProvider>
+				</NoFOUC>
 			</body>
 		</html>
 	);

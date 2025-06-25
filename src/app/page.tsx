@@ -2,10 +2,14 @@
 
 import { motion } from "motion/react";
 
-import { PWAInstallButton } from "@/vue/components/pwa-install-button";
-import { Logo } from "@/vue/components/svg/logo";
+import { InstallManager } from "@/vue/components/PWA/install-manager";
+import { Logo } from "@/vue/components/SVG/logo";
+import { useTheme } from "@/vue/providers/theme.provider";
 
 export default function HomePage() {
+	const { getCurrentThemeHex } = useTheme();
+	const themeHexColors = getCurrentThemeHex();
+
 	return (
 		<div className="relative flex w-full flex-1 flex-col gap-6">
 			<motion.div
@@ -20,7 +24,7 @@ export default function HomePage() {
 					transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
 					className="flex flex-1 flex-col items-center justify-center text-center"
 				>
-					<Logo className="h-auto w-[500px] max-w-[80%]" />
+					<Logo className="h-auto w-[500px] max-w-[80%]" color={themeHexColors?.primaryColor} />
 				</motion.div>
 				<h1 className="sr-only">Amai</h1>
 			</motion.div>
@@ -31,7 +35,9 @@ export default function HomePage() {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
 			>
-				<PWAInstallButton size="lg" className="h-12 w-full max-w-[400px]" />
+				<InstallManager mode="button" variant="primary" size="lg" className="h-12 w-full max-w-[400px]">
+					Installer l&apos;App
+				</InstallManager>
 			</motion.div>
 		</div>
 	);
