@@ -42,27 +42,29 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="fr" suppressHydrationWarning>
+		<html lang="fr" className="dark" suppressHydrationWarning>
 			<head>
 				<meta
 					name="viewport"
 					content="initial-scale=1, viewport-fit=cover, width=device-width, maximum-scale=1, user-scalable=no"
 				></meta>
-				<meta name="apple-mobile-web-app-capable" content="yes"></meta>
+				<meta name="mobile-web-app-capable" content="yes"></meta>
 				<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"></meta>
+				<meta name="apple-mobile-web-app-capable" content="yes"></meta>
+				<meta name="theme-color" content={SiteConfig.brand.theme_color}></meta>
 			</head>
 			<body
 				suppressHydrationWarning
 				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative flex flex-col antialiased`}
 			>
-				<ThemeProvider>
-					<PWAProvider>
+				<PWAProvider>
+					<ThemeProvider>
+						<main className="flex flex-1 flex-col px-4 py-4">{children}</main>
 						<Toaster />
 						<TailwindIndicator />
 						<PWAIndicator />
-						<main className="flex flex-1 flex-col px-4 py-4">{children}</main>
-					</PWAProvider>
-				</ThemeProvider>
+					</ThemeProvider>
+				</PWAProvider>
 			</body>
 		</html>
 	);
