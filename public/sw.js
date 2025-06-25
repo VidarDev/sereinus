@@ -1,48 +1,58 @@
-
-const SW_VERSION = '1.0.0';
-
-console.log(`[SW] Service Worker v${SW_VERSION} starting...`);
+const SW_VERSION = '1.0.1';
 
 self.addEventListener('install', (event) => {
-	console.log(`[SW] Installing v${SW_VERSION}`);
-	
-	event.waitUntil(self.skipWaiting());
+	console.log(`[SW] Service Worker v${SW_VERSION} installed`);
+	self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-	console.log(`[SW] Activating v${SW_VERSION}`);
-	
-	event.waitUntil(
-		// Take control of all clients immediately
-		clients.claim().then(() => {
-			console.log('[SW] Claimed all clients');
-			
-			// Notify all clients of activation
-			return clients.matchAll().then(clients => {
-				clients.forEach(client => {
-					client.postMessage({
-						type: 'SW_ACTIVATED',
-						version: SW_VERSION
-					});
-				});
-			});
-		})
-	);
+	console.log(`[SW] Service Worker v${SW_VERSION} activated (no cache)`);
+	event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('message', (event) => {
-	console.log('[SW] Message received:', event.data);
-	
-	if (event.data && event.data.type === 'SKIP_WAITING') {
-		event.ports[0].postMessage({ success: true });
-		self.skipWaiting();
-	}
-	
-	if (event.data && event.data.type === 'GET_VERSION') {
-		event.ports[0].postMessage({ version: SW_VERSION });
+self.addEventListener('fetch', (event) => {
+	event.respondWith(fetch(event.request));
+});
+
+self.addEventListener('push', (event) => {
+	if (!event.data) return;
+
+	try {
+		const data = event.data.json();
+		const options = {
+			body: data.body || 'Nouveau message',
+			icon: '/icon.png',
+			badge: '/icon.png',
+			vibrate: [100, 50, 100],
+			data: data.data || {},
+			actions: data.actions || []
+		};
+
+		event.waitUntil(
+			self.registration.showNotification(data.title || 'Sereinus', options)
+		);
+	} catch (error) {
+		console.error('[SW] Erreur push:', error);
 	}
 });
 
-// No listener 'fetch' - no request interception
+self.addEventListener('notificationclick', (event) => {
+	event.notification.close();
+	
+	if (event.action) {
+		console.log('[SW] Action notification:', event.action);
+	} else {
+		event.waitUntil(
+			self.clients.matchAll({ type: 'window' }).then((clients) => {
+				if (clients.length > 0) {
+					return clients[0].focus();
+				}
+				return self.clients.openWindow('/');
+			})
+		);
+	}
+});
+
+// No listener 'message' - no request interception
 // No cache API - no storage
 // Application always online and up to date

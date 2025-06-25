@@ -4,8 +4,6 @@ import { Geist_Mono, Montserrat } from "next/font/google";
 import { AutoInstallPrompt } from "@/vue/components/PWA/install-prompt";
 import { Toaster } from "@/vue/components/toaster";
 import { NoFOUC } from "@/vue/components/utils/no-fouc";
-import { PWAIndicator } from "@/vue/components/utils/pwa-indicator";
-import { TailwindIndicator } from "@/vue/components/utils/tailwind-indicator";
 import { PWAProvider } from "@/vue/providers/pwa.provider";
 import { ThemeProvider } from "@/vue/providers/theme.provider";
 import { SiteConfig } from "@/vue/site-config";
@@ -80,8 +78,8 @@ export default function RootLayout({
 						<ThemeProvider>
 							<main className="flex flex-1 flex-col px-4 py-4">{children}</main>
 							<Toaster />
-							<TailwindIndicator />
-							<PWAIndicator />
+							{/* <TailwindIndicator />
+							<PWAIndicator /> */}
 							<AutoInstallPrompt />
 						</ThemeProvider>
 					</PWAProvider>

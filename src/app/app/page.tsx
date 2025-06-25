@@ -3,15 +3,10 @@
 import Link from "next/link";
 import { Settings } from "lucide-react";
 
-import { CrisisVisualizer } from "@/vue/components";
-import { Circle } from "@/vue/components/SVG/circle";
+import { BreathingExercise } from "@/vue/components/Breathing";
 import { Button } from "@/vue/components/ui/button";
-import { useTheme } from "@/vue/hooks/useTheme";
 
 export default function AppPage() {
-	const { getCurrentThemeHex } = useTheme();
-	const themeHexColors = getCurrentThemeHex();
-
 	return (
 		<div className="relative flex w-full flex-1 flex-col gap-6">
 			<div className="flex w-full items-center justify-between">
@@ -23,15 +18,8 @@ export default function AppPage() {
 					</Link>
 				</Button>
 			</div>
-			<div className="flex flex-1 flex-col items-center justify-center text-center">
-				<CrisisVisualizer />
-				<Circle className="w-[400px]" color={themeHexColors?.primaryColor} />
-			</div>
-
-			<div className="flex w-full justify-center">
-				<Button size="lg" className="h-12 w-full max-w-[400px]">
-					Lancer
-				</Button>
+			<div className="flex flex-1 flex-col gap-6">
+				<BreathingExercise className="flex-1" />
 			</div>
 		</div>
 	);

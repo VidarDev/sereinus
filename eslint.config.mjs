@@ -35,6 +35,7 @@ const eslintConfig = [
 	...compat.extends("next/core-web-vitals"),
 	// Simple Import Sort
 	{
+		files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}", "!eslint.config.{js,mjs,cjs}"],
 		plugins: {
 			"simple-import-sort": simpleImportSort
 		},
@@ -49,7 +50,7 @@ const eslintConfig = [
 					]
 				}
 			],
-			"simple-import-sort/exports": "error"
+			"simple-import-sort/exports": ["error"]
 		}
 	},
 	// Prettier

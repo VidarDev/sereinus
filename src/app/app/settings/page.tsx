@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
-import { ThemeSelector } from "@/vue/components/Theme";
 import { Button } from "@/vue/components/ui/button";
 
 export default function SettingsPage() {
@@ -16,15 +15,23 @@ export default function SettingsPage() {
 				<h1 className="text-lg font-medium">Paramètres</h1>
 				<div className="h-8 w-8"></div>
 			</div>
-			<div className="flex flex-1 flex-col">
-				<div className="mb-4">
-					<h2 className="mb-1 text-sm font-medium">Sélectionner un thème</h2>
-					<ThemeSelector className="justify-start" />
-				</div>
-				<div className="mb-4">
-					<h2 className="mb-1 text-sm font-medium">Mode d&apos;apparence</h2>
+			<div className="flex flex-1 flex-col space-y-6">
+				<div className="mb-6">
+					<h2 className="mb-3 text-sm font-medium">Données</h2>
 					<Button size="lg" asChild>
 						<Link href="/app/settings/crisis">Historique des crises</Link>
+					</Button>
+				</div>
+				<div className="mb-6">
+					<h2 className="mb-3 text-sm font-medium">Apparence</h2>
+					<Button size="lg" asChild>
+						<Link href="/app/settings/apparence">Apparence</Link>
+					</Button>
+				</div>
+				<div className="mb-6">
+					<h2 className="mb-3 text-sm font-medium">Programmes</h2>
+					<Button size="lg" asChild>
+						<Link href="/app/settings/breathing-program">Programmes</Link>
 					</Button>
 				</div>
 			</div>
