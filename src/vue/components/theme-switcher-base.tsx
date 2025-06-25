@@ -73,11 +73,7 @@ export function BaseSwitcher<T extends string>({
 
 	if (variant === "palette") {
 		return (
-			<div
-				className={cn("bg-background/50 flex gap-1 rounded-lg border p-1", className)}
-				role="radiogroup"
-				aria-label={ariaLabel}
-			>
+			<div className={cn("flex gap-1", className)} role="radiogroup" aria-label={ariaLabel}>
 				{options.map((option) => {
 					const Icon = option.icon;
 
@@ -87,11 +83,7 @@ export function BaseSwitcher<T extends string>({
 							variant={option.active ? "default" : "ghost"}
 							size={size}
 							onClick={() => onSelect(option.value)}
-							className={cn(
-								"transition-all",
-								option.active && "ring-ring ring-2 ring-offset-2",
-								!showLabels && "px-2"
-							)}
+							className={cn("transition-all", !showLabels && "px-2")}
 							title={`Switch to ${option.label.toLowerCase()}`}
 							role="radio"
 							aria-checked={option.active}
@@ -118,7 +110,7 @@ export function BaseSwitcher<T extends string>({
 						variant={option.active ? "default" : "outline"}
 						size={size}
 						onClick={() => onSelect(option.value)}
-						className={cn("transition-all", option.active && "ring-ring ring-2 ring-offset-2")}
+						className={cn("transition-all")}
 						title={`Switch to ${option.label.toLowerCase()}`}
 						role="radio"
 						aria-checked={option.active}

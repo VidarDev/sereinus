@@ -1,4 +1,4 @@
-export type ThemeId = "default" | "green";
+export type ThemeId = "blue" | "purple" | "brown";
 export type ColorScheme = "light" | "dark" | "auto";
 
 export interface ThemeConfig {
@@ -6,7 +6,9 @@ export interface ThemeConfig {
 	name: string;
 	metaThemeColor: {
 		light: string;
+		primary: string;
 		dark: string;
+		primaryDark: string;
 	};
 }
 
@@ -17,20 +19,34 @@ export interface ThemeMode {
 }
 
 export const THEME_CONFIGS: Record<ThemeId, ThemeConfig> = {
-	default: {
-		id: "default",
-		name: "Default",
+	blue: {
+		id: "blue",
+		name: "Blue",
 		metaThemeColor: {
-			light: "hsl(0 0% 99%)",
-			dark: "hsl(0 0% 0%)"
+			light: "#f1f1f1",
+			primary: "#aee0ff",
+			dark: "#222333",
+			primaryDark: "#aee0ff"
 		}
 	},
-	green: {
-		id: "green",
-		name: "Green",
+	purple: {
+		id: "purple",
+		name: "Purple",
 		metaThemeColor: {
-			light: "oklch(0.9751 0.0127 244.2507)",
-			dark: "oklch(0.2077 0.0398 265.7549)"
+			light: "#f1f1f1",
+			primary: "#d7a9ff",
+			dark: "#222333",
+			primaryDark: "#d7a9ff"
+		}
+	},
+	brown: {
+		id: "brown",
+		name: "Brown",
+		metaThemeColor: {
+			light: "#f1f1f1",
+			primary: "#af735f",
+			dark: "#222333",
+			primaryDark: "#af735f"
 		}
 	}
 } as const;

@@ -15,8 +15,9 @@ interface ColorSwitcherProps {
 }
 
 const THEME_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-	default: Palette,
-	green: Sparkles
+	blue: Palette,
+	purple: Sparkles,
+	brown: Palette
 };
 
 export function ColorSwitcher({ className, showLabels = false, size = "sm", variant = "buttons" }: ColorSwitcherProps) {

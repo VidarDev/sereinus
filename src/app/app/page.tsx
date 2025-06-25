@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Settings } from "lucide-react";
 
 import { CrisisVisualizer } from "@/vue/components";
+import { Circle } from "@/vue/components/svg/circle";
 import { Button } from "@/vue/components/ui/button";
 
 export default function AppPage() {
@@ -18,11 +19,12 @@ export default function AppPage() {
 			</div>
 			<div className="flex flex-1 flex-col items-center justify-center text-center">
 				<CrisisVisualizer />
+				<Circle className="w-[400px]" />
 			</div>
 
-			<div className="w-full">
-				<Button size="lg" className="h-12 w-full">
-					Lancer un crise
+			<div className="flex w-full justify-center">
+				<Button size="lg" className="h-12 w-full max-w-[400px]">
+					Lancer
 				</Button>
 			</div>
 		</div>

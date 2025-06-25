@@ -34,7 +34,7 @@ const THEME_STORAGE_KEY = "custom-theme";
 
 function CustomThemeProviderInner({
 	children,
-	defaultTheme = "default"
+	defaultTheme = "blue"
 }: {
 	children: ReactNode;
 	defaultTheme?: ThemeId;
@@ -67,11 +67,7 @@ function CustomThemeProviderInner({
 		if (!isHydrated) return;
 
 		// Update DOM attribute
-		if (theme !== "default") {
-			document.documentElement.setAttribute("data-theme", theme);
-		} else {
-			document.documentElement.removeAttribute("data-theme");
-		}
+		document.documentElement.setAttribute("data-theme", theme);
 
 		// Update meta tags via service
 		metaTagsService.updateThemeMetaTags(themeConfig, isDark);
@@ -164,11 +160,11 @@ interface ThemeProviderProps {
 	defaultTheme?: ThemeId;
 }
 
-export function ThemeProvider({ children, defaultTheme = "default" }: ThemeProviderProps) {
+export function ThemeProvider({ children, defaultTheme = "blue" }: ThemeProviderProps) {
 	return (
 		<NextThemeProvider
 			attribute="class"
-			defaultTheme="system"
+			defaultTheme="dark"
 			enableSystem
 			disableTransitionOnChange={false}
 			storageKey="next-theme"

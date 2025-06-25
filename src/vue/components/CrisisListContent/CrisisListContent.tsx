@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { get, update } from "@/app/test/list/actions";
+import { get, update } from "@/app/app/settings/crisis/actions";
 import { CrisisViewModel } from "@/main/presentation/dto/Crisis.viewmodel";
 import { Button } from "@/vue/components/ui/button";
 

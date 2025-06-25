@@ -1,26 +1,38 @@
 "use client";
 
-import Image from "next/image";
+import { motion } from "motion/react";
 
 import { PWAInstallButton } from "@/vue/components/pwa-install-button";
+import { Logo } from "@/vue/components/svg/logo";
 
 export default function HomePage() {
 	return (
 		<div className="relative flex w-full flex-1 flex-col gap-6">
-			<div className="flex flex-1 flex-col items-center justify-center text-center">
-				<Image
-					src="/apple-touch-icon.png"
-					alt="Amai"
-					width={500}
-					height={500}
-					className="h-auto w-[500px] max-w-[80%]"
-				/>
-				<h1 className="mt-6 mb-4 text-5xl font-semibold">Amai</h1>
-			</div>
+			<motion.div
+				className="flex flex-1 flex-col items-center justify-center text-center"
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.8, ease: "easeOut" }}
+			>
+				<motion.div
+					initial={{ opacity: 0, scale: 0.8 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+					className="flex flex-1 flex-col items-center justify-center text-center"
+				>
+					<Logo className="h-auto w-[500px] max-w-[80%]" />
+				</motion.div>
+				<h1 className="sr-only">Amai</h1>
+			</motion.div>
 
-			<div className="absolute bottom-0 w-full">
-				<PWAInstallButton size="lg" className="h-12 w-full" />
-			</div>
+			<motion.div
+				className="absolute bottom-0 flex w-full justify-center"
+				initial={{ opacity: 0, y: 50 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+			>
+				<PWAInstallButton size="lg" className="h-12 w-full max-w-[400px]" />
+			</motion.div>
 		</div>
 	);
 }

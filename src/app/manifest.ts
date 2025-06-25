@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
 	return {
 		theme_color: SiteConfig.brand.theme_color,
 		background_color: SiteConfig.brand.splash_background_color,
-		start_url: "/app",
+		start_url: "/",
 		display: "standalone",
 		orientation: "portrait",
 		name: SiteConfig.title,

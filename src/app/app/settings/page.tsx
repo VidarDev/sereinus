@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 import { ColorSwitcher } from "@/vue/components/color-switcher";
-import { ModeSwitcher } from "@/vue/components/mode-switcher";
 import { Button } from "@/vue/components/ui/button";
 
 export default function SettingsPage() {
@@ -19,12 +18,8 @@ export default function SettingsPage() {
 			</div>
 			<div className="flex flex-1 flex-col">
 				<div className="mb-4">
-					<h2 className="mb-1 text-sm font-medium">Mode d&apos;apparence</h2>
-					<ModeSwitcher showLabels variant="buttons" />
-				</div>
-				<div className="mb-4">
-					<h2 className="mb-1 text-sm font-medium">Couleur</h2>
-					<ColorSwitcher showLabels variant="palette" />
+					<h2 className="mb-1 text-sm font-medium">Thème</h2>
+					<ColorSwitcher showLabels variant="palette" size="lg" />
 				</div>
 				<div className="mb-4">
 					<h2 className="mb-1 text-sm font-medium">Mode d&apos;apparence</h2>
