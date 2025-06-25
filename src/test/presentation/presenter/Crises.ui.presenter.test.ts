@@ -21,10 +21,10 @@ describe("Crises UI Presenter", () => {
 
 		// Then
 		const expectedViewModels = [
-			new CrisisViewModel("01/01/2025", "12:30", "1h 03min 03s", "Hello world"),
-			new CrisisViewModel("01/01/2025", "12:30", "1h", "Hello world"),
-			new CrisisViewModel("01/01/2025", "12:30", "1h 00min 02s", "Hello world"),
-			new CrisisViewModel("01/01/2025", "12:30", "00s", "Hello world")
+			new CrisisViewModel("01/01/2025", new Date(2025, 0, 1, 12, 30), "12:30", "1h 03min 03s", "Hello world"),
+			new CrisisViewModel("01/01/2025", new Date(2025, 0, 1, 12, 30), "12:30", "1h", "Hello world"),
+			new CrisisViewModel("01/01/2025", new Date(2025, 0, 1, 12, 30), "12:30", "1h 00min 02s", "Hello world"),
+			new CrisisViewModel("01/01/2025", new Date(2025, 0, 1, 12, 30), "12:30", "00s", "Hello world")
 		];
 
 		expect(actualViewModels).toEqual(expectedViewModels);

@@ -45,10 +45,25 @@ describe("Crisis Controller", () => {
 
 		// Then
 		const expectedViewModels = [
-			new CrisisViewModel("01/01/2025", "00:00", "45s", "First crisis"),
-			new CrisisViewModel("02/01/2025", "00:00", "45s")
+			new CrisisViewModel("01/01/2025", new Date(2025, 0, 1), "00:00", "45s", "First crisis"),
+			new CrisisViewModel("02/01/2025", new Date(2025, 0, 2), "00:00", "45s")
 		];
 
 		expect(actualViewModels).toEqual(expectedViewModels);
+	});
+
+	test("Given a user id with a crisis, when updating, then it should return a successful response", async () => {
+		// Given
+		const userId = "1";
+		const datetime = new Date(2025, 0, 1);
+		const note = "updated crisis";
+
+		// When
+		const actualViewModel = await crisisController.update(userId, datetime, note);
+
+		// Then
+		const expectedViewModel = true;
+
+		expect(actualViewModel).toEqual(expectedViewModel);
 	});
 });

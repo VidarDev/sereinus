@@ -1,59 +1,8 @@
 import { Suspense } from "react";
 
-import { get } from "@/app/test/list/actions";
+import { CrisisListContent } from "@/vue/components/CrisisListContent/CrisisListContent";
 
 export const dynamic = "force-dynamic";
-
-async function CrisisListContent() {
-	try {
-		const response = await get("1");
-
-		if (typeof response === "string") {
-			return (
-				<div className="rounded-md border border-red-200 bg-red-50 p-4">
-					<p className="text-red-800">Erreur lors du chargement des données : {response}</p>
-				</div>
-			);
-		}
-
-		if (!Array.isArray(response)) {
-			return (
-				<div className="rounded-md border border-yellow-200 bg-yellow-50 p-4">
-					<p className="text-yellow-800">Aucune donnée disponible</p>
-				</div>
-			);
-		}
-
-		if (response.length === 0) {
-			return (
-				<div className="rounded-md border border-gray-200 bg-gray-50 p-4">
-					<p className="text-gray-600">Aucune crise trouvée</p>
-				</div>
-			);
-		}
-
-		return (
-			<ul className="space-y-2">
-				{response.map((crisis, index) => (
-					<li key={index} className="rounded border p-2">
-						{crisis.date} à {crisis.time} - {crisis.duration}
-					</li>
-				))}
-			</ul>
-		);
-	} catch (error) {
-		console.error("Erreur lors du chargement des crises:", error);
-
-		return (
-			<div className="rounded-md border border-red-200 bg-red-50 p-4">
-				<p className="text-red-800">Erreur système : Impossible de charger les données</p>
-				<p className="mt-2 text-sm text-red-600">
-					Veuillez réessayer plus tard ou contacter le support si le problème persiste.
-				</p>
-			</div>
-		);
-	}
-}
 
 function LoadingSpinner() {
 	return (

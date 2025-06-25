@@ -8,6 +8,7 @@ export class CrisesUiPresenter implements Presenter<Crisis[], CrisisViewModel[] 
 			(crisis) =>
 				new CrisisViewModel(
 					this.formatDate(crisis.datetime),
+					crisis.datetime,
 					this.formatTime(crisis.datetime),
 					this.formatDuration(crisis.duration),
 					crisis.note
