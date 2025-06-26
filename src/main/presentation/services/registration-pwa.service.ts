@@ -1,6 +1,6 @@
 "use client";
 
-import type { ServiceWorkerRegistrationResult, ServiceWorkerUpdateInfo } from "@/vue/types/pwa";
+import type { ServiceWorkerRegistrationResult, ServiceWorkerUpdateInfo } from "@/vue/features/pwa/types/pwa";
 
 export class ServiceWorkerRegistrationService {
 	private static instance: ServiceWorkerRegistrationService | null = null;

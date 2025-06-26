@@ -19,7 +19,8 @@ describe("Save Crisis Use Case", () => {
 		crisisRepository = {
 			findAllByUserId: jest.fn<(userId: string) => Promise<Crisis[]>>(),
 			save: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>(),
-			update: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>()
+			update: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>(),
+			delete: jest.fn<(userId: string, crisisId: string) => Promise<void>>()
 		};
 
 		saveCrisis = new SaveCrisis(crisisRepository, presenter);

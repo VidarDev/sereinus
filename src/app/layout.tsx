@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Montserrat } from "next/font/google";
 
 import { Toaster } from "@/vue/components/toaster";
-import { PWAIndicator } from "@/vue/components/utils/pwa-indicator";
-import { TailwindIndicator } from "@/vue/components/utils/tailwind-indicator";
+import { NoFOUC } from "@/vue/components/utils/no-fouc";
+import { AutoInstallPrompt } from "@/vue/features/pwa/components/installPrompt";
+import { AudioHapticProvider } from "@/vue/providers/audio-haptic.provider";
 import { PWAProvider } from "@/vue/providers/pwa.provider";
 import { ThemeProvider } from "@/vue/providers/theme.provider";
 import { SiteConfig } from "@/vue/site-config";
@@ -42,19 +43,50 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="fr" suppressHydrationWarning>
+		<html lang="fr" className="dark" suppressHydrationWarning>
+			<head>
+				<meta
+					name="viewport"
+					content="initial-scale=1, viewport-fit=cover, width=device-width, maximum-scale=1, user-scalable=no"
+				></meta>
+				<meta name="mobile-web-app-capable" content="yes"></meta>
+				<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"></meta>
+				<meta name="apple-mobile-web-app-capable" content="yes"></meta>
+				<meta name="theme-color" content={SiteConfig.brand.theme_color}></meta>
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `
+							(function() {
+								try {
+									const storedTheme = localStorage.getItem('app-theme');
+									const validThemes = ['blue', 'purple', 'brown'];
+									const theme = validThemes.includes(storedTheme) ? storedTheme : 'blue';
+									document.documentElement.setAttribute('data-theme', theme);
+								} catch (e) {
+									document.documentElement.setAttribute('data-theme', 'blue');
+								}
+							})();
+						`
+					}}
+				/>
+			</head>
 			<body
 				suppressHydrationWarning
-				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative min-h-[100dvh] antialiased`}
+				className={`${montserratSans.variable} ${geistMono.variable} bg-background relative flex flex-col antialiased`}
 			>
-				<ThemeProvider>
+				<NoFOUC>
 					<PWAProvider>
-						<Toaster />
-						<TailwindIndicator />
-						<PWAIndicator />
-						<main className="p-4">{children}</main>
+						<ThemeProvider>
+							<AudioHapticProvider>
+								<main className="flex flex-1 flex-col">{children}</main>
+								<Toaster />
+								{/* <TailwindIndicator />
+								<PWAIndicator /> */}
+								<AutoInstallPrompt />
+							</AudioHapticProvider>
+						</ThemeProvider>
 					</PWAProvider>
-				</ThemeProvider>
+				</NoFOUC>
 			</body>
 		</html>
 	);

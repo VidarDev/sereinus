@@ -9,10 +9,16 @@ datasource db {
 }
 
 model Crisis {
-  userId   String
-  datetime DateTime
-  duration Int
-  note     String?
+  id               String   @id @default(cuid())
+  userId           String
+  datetime         DateTime
+  duration         Int
+  note             String?
+  protocolId       String?
+  protocolName     String?
+  cycleCount       Int?
+  efficiency       Float?
+  averageCycleTime Float?
 
-  @@id([userId, datetime])
+  @@index([userId, datetime])
 }

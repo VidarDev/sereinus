@@ -1,7 +1,9 @@
+import type { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { Client } from "pg";
 
-import { getInjection } from "@/di/container";
+import { appContainer } from "@/di/container";
+import { DI_SYMBOLS } from "@/di/types";
 
 const waitForPostgres = async (retries = 10, delay = 250) => {
 	for (let i = 0; i < retries; i++) {
@@ -31,23 +33,50 @@ export const setupTestDatabase = async () => {
 		stdio: "inherit"
 	});
 
-	await getInjection("PrismaClient").crisis.createMany({
+	const prisma = appContainer.get<PrismaClient>(DI_SYMBOLS.PrismaClient);
+	await prisma.crisis.createMany({
 		data: [
 			{
+				id: "crisis-1",
 				userId: "1",
 				datetime: new Date(2025, 0, 1, 0, 0, 0),
 				duration: 45,
-				note: "First crisis"
+				note: "First crisis",
+				protocolId: null,
+				protocolName: null,
+				cycleCount: null,
+				efficiency: null,
+				averageCycleTime: null
 			},
 			{
+				id: "crisis-2",
 				userId: "1",
 				duration: 45,
-				datetime: new Date(2025, 0, 2, 0, 0, 0)
+				datetime: new Date(2025, 0, 2, 0, 0, 0),
+				note: null,
+				protocolId: null,
+				protocolName: null,
+				cycleCount: null,
+				efficiency: null,
+				averageCycleTime: null
+			},
+			{
+				id: "breathing-session-1",
+				userId: "1",
+				datetime: new Date(2025, 0, 3, 0, 0, 0),
+				duration: 300,
+				note: "Session de respiration test",
+				protocolId: "box-breathing",
+				protocolName: "Box Breathing",
+				cycleCount: 10,
+				efficiency: 85.5,
+				averageCycleTime: 30000
 			}
 		]
 	});
 };
 
 export const teardownTestDatabase = async () => {
-	await getInjection("PrismaClient").$disconnect();
+	const prisma = appContainer.get<PrismaClient>(DI_SYMBOLS.PrismaClient);
+	await prisma.$disconnect();
 };

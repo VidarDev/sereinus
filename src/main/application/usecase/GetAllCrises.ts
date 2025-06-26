@@ -6,9 +6,9 @@ export class GetAllCrises<T> {
 	private readonly crisisRepository: CrisisRepository;
 	private readonly crisesPresenter: Presenter<Crisis[], T>;
 
-	constructor(crisisRepository: CrisisRepository, crisisPresenter: Presenter<Crisis[], T>) {
+	constructor(crisisRepository: CrisisRepository, crisesPresenter: Presenter<Crisis[], T>) {
 		this.crisisRepository = crisisRepository;
-		this.crisesPresenter = crisisPresenter;
+		this.crisesPresenter = crisesPresenter;
 	}
 
 	async execute(userId: string): Promise<T> {

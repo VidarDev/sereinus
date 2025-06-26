@@ -2,10 +2,10 @@
 
 import { createContext, ReactNode, useContext, useMemo } from "react";
 
+import type { Platform, PWAInstallationResult } from "@/vue/features/pwa/types/pwa";
 import { usePWAInstall } from "@/vue/hooks/usePWAInstall";
 import { usePWAStatus } from "@/vue/hooks/usePWAStatus";
 import { usePWAUpdate } from "@/vue/hooks/usePWAUpdate";
-import type { Platform, PWAInstallationResult } from "@/vue/types/pwa";
 
 export interface BeforeInstallPromptEvent extends Event {
 	prompt(): Promise<void>;

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ServiceWorkerRegistrationService } from "@/main/presentation/services/registration-pwa.service";
-import type { ServiceWorkerUpdateInfo } from "@/vue/types/pwa";
+import type { ServiceWorkerUpdateInfo } from "@/vue/features/pwa/types/pwa";
 
 const registrationService = ServiceWorkerRegistrationService.getInstance();
 
