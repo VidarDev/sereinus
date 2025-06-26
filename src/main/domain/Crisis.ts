@@ -1,5 +1,4 @@
 export class Crisis {
-	private readonly _id?: string;
 	private readonly _datetime: Date;
 	private readonly _duration: number;
 	private readonly _note: string | undefined;
@@ -13,28 +12,20 @@ export class Crisis {
 		datetime: Date,
 		duration: number,
 		note?: string,
-		options?: {
-			id?: string;
-			protocolId?: string;
-			protocolName?: string;
-			cycleCount?: number;
-			efficiency?: number;
-			averageCycleTime?: number;
-		}
+		protocolId?: string,
+		protocolName?: string,
+		cycleCount?: number,
+		efficiency?: number,
+		averageCycleTime?: number
 	) {
 		this._datetime = datetime;
 		this._duration = duration;
 		this._note = note;
-		this._id = options?.id;
-		this._protocolId = options?.protocolId;
-		this._protocolName = options?.protocolName;
-		this._cycleCount = options?.cycleCount;
-		this._efficiency = options?.efficiency;
-		this._averageCycleTime = options?.averageCycleTime;
-	}
-
-	get id(): string | undefined {
-		return this._id;
+		this._protocolId = protocolId;
+		this._protocolName = protocolName;
+		this._cycleCount = cycleCount;
+		this._efficiency = efficiency;
+		this._averageCycleTime = averageCycleTime;
 	}
 
 	get datetime(): Date {

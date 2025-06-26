@@ -1,18 +1,16 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from "@jest/globals";
 import { execSync } from "child_process";
 
-import { appContainer } from "@/di/container";
-import { DI_SYMBOLS } from "@/di/types";
+import { getInjection } from "@/di/container";
 import { CrisisController } from "@/main/presentation/controller/Crisis.controller";
 import { CrisisViewModel } from "@/main/presentation/dto/Crisis.viewmodel";
 import { setupTestDatabase, teardownTestDatabase } from "@/test/helper/prismaHelper";
 
 describe("Crisis Controller", () => {
-	let crisisController: CrisisController;
+	const crisisController: CrisisController = getInjection("CrisisController");
 
 	beforeAll(() => {
 		execSync("docker compose -f docker-compose.test.yaml up -d");
-		crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
 	});
 
 	beforeEach(async () => {
@@ -47,46 +45,47 @@ describe("Crisis Controller", () => {
 		const actualViewModels = await crisisController.getAll(userId);
 
 		// Then
-		// Vérifier que c'est un tableau de CrisisViewModel
-		expect(Array.isArray(actualViewModels)).toBe(true);
+		const expectedViewModels = [
+			new CrisisViewModel(
+				"01/01/2025",
+				new Date(2025, 0, 1),
+				"00:00",
+				"45s",
+				"First crisis",
+				"protocol-1",
+				"protocol",
+				3,
+				2.3,
+				3.3
+			),
+			new CrisisViewModel("02/01/2025", new Date(2025, 0, 2), "00:00", "45s")
+		];
 
-		if (Array.isArray(actualViewModels)) {
-			expect(actualViewModels.length).toBeGreaterThan(0);
-
-			// Vérifier les propriétés du premier élément
-			const firstCrisis = actualViewModels[0];
-			expect(firstCrisis).toHaveProperty("formatedDate");
-			expect(firstCrisis).toHaveProperty("datetime");
-			expect(firstCrisis).toHaveProperty("time");
-			expect(firstCrisis).toHaveProperty("duration");
-			expect(firstCrisis).toHaveProperty("note");
-			expect(firstCrisis).toHaveProperty("id");
-			expect(firstCrisis).toHaveProperty("protocolId");
-			expect(firstCrisis).toHaveProperty("isBreathingSession");
-			expect(firstCrisis).toHaveProperty("isSimpleCrisis");
-		}
+		expect(actualViewModels).toEqual(expectedViewModels);
 	});
 
-	test("Given a user id with a crisis, when updating, then it should return a successful response", async () => {
+	test("Given a user id with a datetime and a note, when updating, then it should return a successful response", async () => {
 		// Given
 		const userId = "1";
-
-		const existingCrises = await crisisController.getAll(userId);
-		expect(Array.isArray(existingCrises)).toBe(true);
-		expect((existingCrises as CrisisViewModel[]).length).toBeGreaterThan(0);
-
-		const firstCrisis = (existingCrises as CrisisViewModel[])[0];
-		expect(firstCrisis.id).toBeDefined();
-
-		if (!firstCrisis.id) {
-			throw new Error("First crisis should have an ID");
-		}
-
-		const crisisId = firstCrisis.id;
+		const datetime = new Date(2025, 0, 1);
 		const note = "updated crisis";
 
 		// When
-		const actualViewModel = await crisisController.update(userId, crisisId, note);
+		const actualViewModel = await crisisController.update(userId, datetime, note);
+
+		// Then
+		const expectedViewModel = true;
+
+		expect(actualViewModel).toEqual(expectedViewModel);
+	});
+
+	test("Given a user id with a datetime, when deleting, then it should return a successful response", async () => {
+		// Given
+		const userId = "1";
+		const datetime = new Date(2025, 0, 1);
+
+		// When
+		const actualViewModel = await crisisController.delete(userId, datetime);
 
 		// Then
 		const expectedViewModel = true;

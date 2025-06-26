@@ -30,14 +30,16 @@ export class CrisisPrismaRepository implements CrisisRepository {
 
 	private mapAllToCrisis(crisisDTOs: CrisisDTO[]): Crisis[] {
 		return crisisDTOs.map((crisisDTO: CrisisDTO) => {
-			return new Crisis(crisisDTO.datetime, crisisDTO.duration, crisisDTO.note, {
-				id: crisisDTO.id,
-				protocolId: crisisDTO.protocolId,
-				protocolName: crisisDTO.protocolName,
-				cycleCount: crisisDTO.cycleCount,
-				efficiency: crisisDTO.efficiency,
-				averageCycleTime: crisisDTO.averageCycleTime
-			});
+			return new Crisis(
+				crisisDTO.datetime,
+				crisisDTO.duration,
+				crisisDTO.note,
+				crisisDTO.protocolId,
+				crisisDTO.protocolName,
+				crisisDTO.cycleCount,
+				crisisDTO.efficiency,
+				crisisDTO.averageCycleTime
+			);
 		});
 	}
 
@@ -50,14 +52,17 @@ export class CrisisPrismaRepository implements CrisisRepository {
 	}
 
 	private async saveToDatabase(userId: string, crisis: Crisis): Promise<void> {
-		const crisisDTO = new CrisisDTO(userId, crisis.datetime, crisis.duration, crisis.note, {
-			id: crisis.id,
-			protocolId: crisis.protocolId,
-			protocolName: crisis.protocolName,
-			cycleCount: crisis.cycleCount,
-			efficiency: crisis.efficiency,
-			averageCycleTime: crisis.averageCycleTime
-		});
+		const crisisDTO = new CrisisDTO(
+			userId,
+			crisis.datetime,
+			crisis.duration,
+			crisis.note,
+			crisis.protocolId,
+			crisis.protocolName,
+			crisis.cycleCount,
+			crisis.efficiency,
+			crisis.averageCycleTime
+		);
 
 		await this.crisisPrismaDao.save(crisisDTO);
 	}
@@ -65,10 +70,8 @@ export class CrisisPrismaRepository implements CrisisRepository {
 	private handleSaveError(error: unknown): void {
 		console.error("Failed to save crisis:", error);
 
-		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			if (error.code === "P2002") {
-				throw new Error("Un enregistrement existe déjà pour cette date.");
-			}
+		if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+			throw new Error("Un enregistrement existe déjà pour cette date.");
 		} else {
 			throw new Error("Une erreur est survenue lors de la sauvegarde.");
 		}
@@ -82,50 +85,51 @@ export class CrisisPrismaRepository implements CrisisRepository {
 		}
 	}
 
-	async delete(userId: string, crisisId: string): Promise<void> {
-		try {
-			await this.deleteFromDatabase(userId, crisisId);
-		} catch (error) {
-			this.handleDeleteError(error);
-		}
-	}
-
 	private async updateInDatabase(userId: string, crisis: Crisis): Promise<void> {
-		const crisisDTO = new CrisisDTO(userId, crisis.datetime, crisis.duration, crisis.note, {
-			id: crisis.id,
-			protocolId: crisis.protocolId,
-			protocolName: crisis.protocolName,
-			cycleCount: crisis.cycleCount,
-			efficiency: crisis.efficiency,
-			averageCycleTime: crisis.averageCycleTime
-		});
+		const crisisDTO = new CrisisDTO(
+			userId,
+			crisis.datetime,
+			crisis.duration,
+			crisis.note,
+			crisis.protocolId,
+			crisis.protocolName,
+			crisis.cycleCount,
+			crisis.efficiency,
+			crisis.averageCycleTime
+		);
 
 		await this.crisisPrismaDao.update(crisisDTO);
-	}
-
-	private async deleteFromDatabase(userId: string, crisisId: string): Promise<void> {
-		await this.crisisPrismaDao.delete(crisisId);
 	}
 
 	private handleUpdateError(error: unknown): void {
 		console.error("Failed to update crisis:", error);
 
-		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			if (error.code === "P2025") {
-				throw new Error("Cet enregistrement n'existe pas.");
-			}
+		if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+			throw new Error("Cet enregistrement n'existe pas.");
 		} else {
 			throw new Error("Une erreur est survenue lors de la mise à jour.");
 		}
 	}
 
+	async delete(userId: string, crisis: Crisis): Promise<void> {
+		try {
+			await this.deleteFromDatabase(userId, crisis);
+		} catch (error) {
+			this.handleDeleteError(error);
+		}
+	}
+
+	private async deleteFromDatabase(userId: string, crisis: Crisis): Promise<void> {
+		const crisisDTO = new CrisisDTO(userId, crisis.datetime, crisis.duration);
+
+		await this.crisisPrismaDao.delete(crisisDTO);
+	}
+
 	private handleDeleteError(error: unknown): void {
 		console.error("Failed to delete crisis:", error);
 
-		if (error instanceof Prisma.PrismaClientKnownRequestError) {
-			if (error.code === "P2025") {
-				throw new Error("Cet enregistrement n'existe pas.");
-			}
+		if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+			throw new Error("Cet enregistrement n'existe pas.");
 		} else {
 			throw new Error("Une erreur est survenue lors de la suppression.");
 		}

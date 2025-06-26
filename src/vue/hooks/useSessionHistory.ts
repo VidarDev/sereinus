@@ -2,14 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import {
-	type BreathingSessionData,
-	deleteCrisis,
-	getAllCrises,
-	saveBreathingSession,
-	type SerializableCrisis
-} from "@/app/actions";
+import { deleteCrisis, getAllCrises, saveBreathingSession, type SerializableCrisis } from "@/app/actions";
 import { generateUID, getFromLocalStorage, saveToLocalStorage } from "@/vue/lib/utils";
+import { BreathingSessionData } from "@/vue/types/breathingSession.types";
 import { SiteConfig } from "../site-config";
 
 export interface SessionHistoryEntry {
@@ -17,155 +12,41 @@ export interface SessionHistoryEntry {
 	uid: string;
 	datetime: Date;
 	duration: number;
-	protocolId?: string;
-	protocolName?: string;
-	cycleCount?: number;
-	efficiency?: number;
-	averageCycleTime?: number;
-	note?: string;
+	note: string;
+	protocolId: string;
+	protocolName: string;
+	cycleCount: number;
+	efficiency: number;
+	averageCycleTime: number;
 }
 
 const SESSIONS_STORAGE_KEY = `${SiteConfig.appId}-session-history`;
 const USER_ID_KEY = `${SiteConfig.appId}-user-id`;
 
-function getUserId(): string {
+const getUserId = (): string => {
 	try {
 		const existingUserId = localStorage.getItem(USER_ID_KEY);
+
 		if (existingUserId) {
 			return existingUserId;
 		}
 
 		const newUserId = generateUID();
+
 		localStorage.setItem(USER_ID_KEY, newUserId);
+
 		return newUserId;
 	} catch (error) {
 		console.error("Erreur lors de la gestion de l'ID utilisateur:", error);
+
 		return `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 	}
-}
+};
 
 export const useSessionHistoryClean = () => {
 	const [sessions, setSessions] = useState<SessionHistoryEntry[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-
-	const loadSessions = async () => {
-		try {
-			setIsLoading(true);
-			setError(null);
-
-			// Clean up localStorage duplicates first
-			const rawLocalSessions = getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || [];
-			const cleanedLocalSessions = rawLocalSessions
-				.map((session) => ({
-					...session,
-					datetime: new Date(session.datetime)
-				}))
-				.filter((session, index, array) => {
-					// Remove duplicates based on datetime, protocol and duration
-					return !array.slice(0, index).some((existing) => {
-						const timeDiff = Math.abs(session.datetime.getTime() - existing.datetime.getTime());
-						const sameProtocol = session.protocolId === existing.protocolId;
-						const sameDuration = Math.abs(session.duration - existing.duration) < 1000;
-						return timeDiff < 60000 && sameProtocol && sameDuration;
-					});
-				});
-
-			// Save cleaned sessions back to localStorage
-			if (cleanedLocalSessions.length !== rawLocalSessions.length) {
-				saveToLocalStorage(SESSIONS_STORAGE_KEY, cleanedLocalSessions);
-			}
-
-			const localSessions = cleanedLocalSessions;
-			const userId = getUserId();
-
-			const result = await getAllCrises(userId);
-
-			if (!result.success || !result.data) {
-				setSessions(localSessions);
-				setError(result.error || "Erreur lors du chargement depuis le serveur");
-				return;
-			}
-
-			const serverSessions = result.data
-				.filter((crisis: SerializableCrisis) => crisis.isBreathingSession)
-				.map((crisis: SerializableCrisis) => {
-					const datetime = new Date(crisis.datetime);
-					if (isNaN(datetime.getTime())) {
-						console.warn("Invalid date for crisis:", crisis.datetime);
-						return null;
-					}
-
-					const parseDuration = (durationStr: string): number => {
-						let totalMs = 0;
-
-						const hoursMatch = durationStr.match(/(\d+)h/);
-						const minutesMatch = durationStr.match(/(\d+)min/);
-						const secondsMatch = durationStr.match(/(\d+)s/);
-
-						if (hoursMatch) {
-							totalMs += parseInt(hoursMatch[1]) * 60 * 60 * 1000;
-						}
-						if (minutesMatch) {
-							totalMs += parseInt(minutesMatch[1]) * 60 * 1000;
-						}
-						if (secondsMatch) {
-							totalMs += parseInt(secondsMatch[1]) * 1000;
-						}
-
-						return totalMs || 0;
-					};
-
-					return {
-						id: crisis.id || `${datetime.getTime()}`,
-						uid: crisis.id || generateUID(),
-						datetime,
-						duration: parseDuration(crisis.duration),
-						protocolId: crisis.protocolId || "",
-						protocolName: crisis.protocolName || "Protocole inconnu",
-						cycleCount: crisis.cycleCount || 0,
-						efficiency: crisis.efficiency || 0,
-						averageCycleTime: crisis.averageCycleTime || 0,
-						note: crisis.note
-					};
-				})
-				.filter(Boolean); // Remove null entries
-
-			const allSessions = [...localSessions];
-			serverSessions.forEach((serverSession) => {
-				if (serverSession) {
-					const isDuplicate = allSessions.find((local) => {
-						if (local.id && serverSession.id && local.id === serverSession.id) {
-							return true;
-						}
-						if (local.uid && serverSession.uid && local.uid === serverSession.uid) {
-							return true;
-						}
-						const timeDiff = Math.abs(
-							new Date(local.datetime).getTime() - new Date(serverSession.datetime).getTime()
-						);
-						const sameProtocol = local.protocolId === serverSession.protocolId;
-						const sameDuration = Math.abs(local.duration - serverSession.duration) < 1000;
-
-						return timeDiff < 60000 && sameProtocol && sameDuration;
-					});
-
-					if (!isDuplicate) {
-						allSessions.push(serverSession);
-					}
-				}
-			});
-
-			allSessions.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
-
-			setSessions(allSessions);
-			saveToLocalStorage(SESSIONS_STORAGE_KEY, allSessions);
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Erreur lors du chargement des sessions");
-		} finally {
-			setIsLoading(false);
-		}
-	};
 
 	const saveSession = async (sessionData: {
 		duration: number;
@@ -189,24 +70,35 @@ export const useSessionHistoryClean = () => {
 				cycleCount: sessionData.cycleCount,
 				efficiency: sessionData.efficiency,
 				averageCycleTime: sessionData.averageCycleTime,
-				note: sessionData.note
+				note: sessionData.note ?? ""
 			};
 
 			const breathingSessionData: BreathingSessionData = {
 				date: sessionEntry.datetime,
 				duration: sessionData.duration,
+				note: sessionData.note,
 				protocolId: sessionData.protocolId,
 				protocolName: sessionData.protocolName,
 				cycleCount: sessionData.cycleCount,
 				efficiency: sessionData.efficiency,
-				averageCycleTime: sessionData.averageCycleTime,
-				note: sessionData.note
+				averageCycleTime: sessionData.averageCycleTime
 			};
 
 			const result = await saveBreathingSession(breathingSessionData, userId);
 
 			if (result.success) {
-				await loadSessions();
+				try {
+					setIsLoading(true);
+					setError(null);
+
+					const serverSessions = await loadSessions();
+
+					setSessions(serverSessions);
+				} catch (error) {
+					setError((error as Error).message);
+				} finally {
+					setIsLoading(false);
+				}
 			} else {
 				console.warn("Sauvegarde serveur échouée, session conservée en local:", result.error);
 				const currentSessions = getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || [];
@@ -238,7 +130,7 @@ export const useSessionHistoryClean = () => {
 			);
 
 			if (sessionToDelete?.id) {
-				const result = await deleteCrisis(userId, sessionToDelete.id);
+				const result = await deleteCrisis(userId, sessionToDelete.datetime);
 
 				if (!result.success) {
 					console.warn("Suppression serveur échouée:", result.error);
@@ -304,4 +196,57 @@ export const useSessionHistoryClean = () => {
 		getStats,
 		reloadSessions: loadSessions
 	};
+};
+
+const loadSessions = async () => {
+	const userId = getUserId();
+	const result = await getAllCrises(userId);
+
+	if (!result.success || !result.data) {
+		throw new Error(result.error);
+	}
+
+	return result.data
+		.filter((crisis: SerializableCrisis) => crisis.isBreathingSession)
+		.map((crisis: SerializableCrisis) => {
+			const datetime = new Date(crisis.datetime);
+
+			return {
+				id: crisis.datetime,
+				uid: crisis.datetime,
+				datetime,
+				duration: parseDuration(crisis.duration),
+				note: crisis.note ?? "",
+				protocolId: crisis.protocolId ?? "",
+				protocolName: crisis.protocolName ?? "Protocole inconnu",
+				cycleCount: crisis.cycleCount ?? 0,
+				efficiency: crisis.efficiency ?? 0,
+				averageCycleTime: crisis.averageCycleTime ?? 0
+			} satisfies SessionHistoryEntry;
+		})
+		.filter(Boolean)
+		.sort(
+			(a: SessionHistoryEntry, b: SessionHistoryEntry) =>
+				new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+		);
+};
+
+const parseDuration = (durationStr: string): number => {
+	let totalMs = 0;
+
+	const hoursMatch = durationStr.match(/(\d+)h/);
+	const minutesMatch = durationStr.match(/(\d+)min/);
+	const secondsMatch = durationStr.match(/(\d+)s/);
+
+	if (hoursMatch) {
+		totalMs += parseInt(hoursMatch[1]) * 60 * 60 * 1000;
+	}
+	if (minutesMatch) {
+		totalMs += parseInt(minutesMatch[1]) * 60 * 1000;
+	}
+	if (secondsMatch) {
+		totalMs += parseInt(secondsMatch[1]) * 1000;
+	}
+
+	return totalMs || 0;
 };

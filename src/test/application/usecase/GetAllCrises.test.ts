@@ -25,7 +25,7 @@ describe("Get All Crisis", () => {
 				]),
 			save: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>(),
 			update: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>(),
-			delete: jest.fn<(userId: string, crisisId: string) => Promise<void>>()
+			delete: jest.fn<(userId: string, crisis: Crisis) => Promise<void>>()
 		};
 
 		getAllCrisis = new GetAllCrises<unknown>(crisisRepository, crisesPresenter);
