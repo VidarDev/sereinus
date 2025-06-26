@@ -55,11 +55,7 @@ export class BreathingProtocolsUIPresenter implements Presenter<BreathingProtoco
 	private categorizeProtocols(protocols: BreathingProtocolViewModel[]): Record<string, BreathingProtocolViewModel[]> {
 		const categories: Record<string, string[]> = {
 			ACUTE_ANXIETY: ["box-breathing", "technique-478"],
-			RELAXATION: ["technique-478", "coherent-breathing", "extended-exhale"],
-			MEDITATION: ["coherent-breathing", "box-breathing"],
-			BEGINNER: ["coherent-breathing", "triangle-breathing", "box-breathing"],
 			DAILY_PRACTICE: ["coherent-breathing", "box-breathing"],
-			ENERGY: ["wim-hof"],
 			SLEEP: ["technique-478", "extended-exhale"]
 		};
 

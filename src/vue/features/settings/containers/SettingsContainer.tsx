@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 
+import { MusicSection } from "../components/MusicSection/MusicSection";
 import { PreferencesSection } from "../components/PreferencesSection/PreferencesSection";
 import { ShapeSection } from "../components/ShapeSection/ShapeSection";
 import { ThemeSection } from "../components/ThemeSection/ThemeSection";
@@ -58,6 +59,8 @@ export const SettingsContainer = ({ className }: SettingsContainerProps) => {
 					{...(errors.shape && { error: errors.shape })}
 					className="border-b pb-6"
 				/>
+
+				<MusicSection className="border-b pb-6" />
 
 				<PreferencesSection
 					preferences={settings.preferences}

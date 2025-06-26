@@ -1,23 +1,41 @@
 import { createModule } from "@evyweb/ioctopus";
 
-import { DI_SYMBOLS } from "@/di/types";
+import { DeleteCrisis } from "@/main/application/usecase/DeleteCrisis";
+import { GetAllCrises } from "@/main/application/usecase/GetAllCrises";
+import { SaveCrisis } from "@/main/application/usecase/SaveCrisis";
+import { UpdateCrisis } from "@/main/application/usecase/UpdateCrisis";
 import { CrisisController } from "@/main/presentation/controller/Crisis.controller";
-import { ActionUiPresenter } from "@/main/presentation/presenter/Action.ui.presenter";
-import { CrisesUiPresenter } from "@/main/presentation/presenter/Crises.ui.presenter";
+import { DI_SYMBOLS } from "../types";
 
 export const createApplicationModule = () => {
 	const applicationModule = createModule();
 
+	// Use Cases
+	applicationModule
+		.bind(DI_SYMBOLS.GetAllCrises)
+		.toClass(GetAllCrises, [DI_SYMBOLS.CrisisRepository, DI_SYMBOLS.CrisesUIPresenter]);
+
+	applicationModule
+		.bind(DI_SYMBOLS.SaveCrisis)
+		.toClass(SaveCrisis, [DI_SYMBOLS.CrisisRepository, DI_SYMBOLS.ActionUIPresenter]);
+
+	applicationModule
+		.bind(DI_SYMBOLS.UpdateCrisis)
+		.toClass(UpdateCrisis, [DI_SYMBOLS.CrisisRepository, DI_SYMBOLS.ActionUIPresenter]);
+
+	applicationModule
+		.bind(DI_SYMBOLS.DeleteCrisis)
+		.toClass(DeleteCrisis, [DI_SYMBOLS.CrisisRepository, DI_SYMBOLS.ActionUIPresenter]);
+
+	// Controllers
 	applicationModule
 		.bind(DI_SYMBOLS.CrisisController)
 		.toClass(CrisisController, [
-			DI_SYMBOLS.CrisisRepository,
-			DI_SYMBOLS.ActionsUIPresenter,
-			DI_SYMBOLS.CrisesUIPresenter
+			DI_SYMBOLS.GetAllCrises,
+			DI_SYMBOLS.SaveCrisis,
+			DI_SYMBOLS.UpdateCrisis,
+			DI_SYMBOLS.DeleteCrisis
 		]);
-
-	applicationModule.bind(DI_SYMBOLS.CrisesUIPresenter).toClass(CrisesUiPresenter);
-	applicationModule.bind(DI_SYMBOLS.ActionsUIPresenter).toClass(ActionUiPresenter);
 
 	return applicationModule;
 };

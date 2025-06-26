@@ -15,45 +15,43 @@ import { BreathingSessionController } from "@/main/presentation/controller/Breat
 import { CrisisController } from "@/main/presentation/controller/Crisis.controller";
 
 export const DI_SYMBOLS = {
-	// Repositories
-	BreathingProtocolRepository: Symbol.for("BreathingProtocolRepository"),
-	BreathingSessionRepository: Symbol.for("BreathingSessionRepository"),
-	CrisisRepository: Symbol.for("CrisisRepository"),
-
-	// Use Cases
+	// Application Layer
 	GetBreathingProtocols: Symbol.for("GetBreathingProtocols"),
 	GetBreathingProtocolsForUI: Symbol.for("GetBreathingProtocolsForUI"),
-	StartBreathingSession: Symbol.for("StartBreathingSession"),
 	CreateBreathingSessionForUI: Symbol.for("CreateBreathingSessionForUI"),
 	ControlBreathingSession: Symbol.for("ControlBreathingSession"),
+	StartBreathingSession: Symbol.for("StartBreathingSession"),
+
+	// Crisis Use Cases
 	GetAllCrises: Symbol.for("GetAllCrises"),
 	SaveCrisis: Symbol.for("SaveCrisis"),
 	UpdateCrisis: Symbol.for("UpdateCrisis"),
-
-	// Presenters
-	BreathingProtocolsUIPresenter: Symbol.for("BreathingProtocolsUIPresenter"),
-	BreathingSessionUIPresenter: Symbol.for("BreathingSessionUIPresenter"),
-	ActionsUIPresenter: Symbol.for("ActionsUIPresenter"),
-	CrisesUIPresenter: Symbol.for("CrisesUIPresenter"),
+	DeleteCrisis: Symbol.for("DeleteCrisis"),
 
 	// Controllers
 	BreathingSessionController: Symbol.for("BreathingSessionController"),
 	CrisisController: Symbol.for("CrisisController"),
 
-	// Infrastructure Services
-	UUIDGenerator: Symbol.for("UUIDGenerator"),
+	// Repositories
+	BreathingProtocolRepository: Symbol.for("BreathingProtocolRepository"),
+	BreathingSessionRepository: Symbol.for("BreathingSessionRepository"),
+	CrisisRepository: Symbol.for("CrisisRepository"),
+
+	// Services
+	UuidGenerator: Symbol.for("UuidGenerator"),
 	Clock: Symbol.for("Clock"),
-	EncryptionService: Symbol.for("EncryptionService"),
-
-	// Services - Application
-	SecureCrisisService: Symbol.for("SecureCrisisService"),
-
-	// Services - Domain
 	BreathingSessionOrchestrator: Symbol.for("BreathingSessionOrchestrator"),
 
+	// Infrastructure
 	PrismaClient: Symbol.for("PrismaClient"),
-	CrisisPrismaDao: Symbol.for("CrisisPrismaDao")
-} as const;
+	CrisisPrismaDao: Symbol.for("CrisisPrismaDao"),
+
+	// Presenters
+	ActionUIPresenter: Symbol.for("ActionUIPresenter"),
+	BreathingProtocolsUIPresenter: Symbol.for("BreathingProtocolsUIPresenter"),
+	BreathingSessionUIPresenter: Symbol.for("BreathingSessionUIPresenter"),
+	CrisesUIPresenter: Symbol.for("CrisesUIPresenter")
+};
 
 export interface DiReturnTypes {
 	BreathingProtocolRepository: BreathingProtocolRepository;
@@ -69,13 +67,13 @@ export interface DiReturnTypes {
 
 	BreathingProtocolsUIPresenter: Presenter<unknown, unknown>;
 	BreathingSessionUIPresenter: Presenter<unknown, unknown>;
-	ActionsUIPresenter: Presenter<unknown, unknown>;
+	ActionUIPresenter: Presenter<unknown, unknown>;
 	CrisesUIPresenter: Presenter<unknown, unknown>;
 
 	BreathingSessionController: BreathingSessionController;
 	CrisisController: CrisisController;
 
-	UUIDGenerator: UUIDGenerator;
+	UuidGenerator: UUIDGenerator;
 	Clock: Clock;
 
 	PrismaClient: unknown;

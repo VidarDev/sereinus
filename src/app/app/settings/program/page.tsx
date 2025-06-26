@@ -1,40 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { Brain, CheckCircle, ChevronLeft, Clock, Heart, Loader2, Moon, Smile, Target, Zap } from "lucide-react";
+import { CheckCircle, ChevronLeft, Clock, Heart, Loader2, Moon, Target, Zap } from "lucide-react";
 
 import { Badge } from "@/vue/components/ui/badge";
 import { Button } from "@/vue/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/vue/components/ui/card";
-import { type BreathingProtocolViewModel, useBreathingProtocolsClean } from "@/vue/hooks/useBreathingProtocolsClean";
+import { type BreathingProtocolViewModel, useBreathingProtocolsClean } from "@/vue/hooks/useBreathingProtocols";
 
 const CATEGORY_ICONS = {
 	ACUTE_ANXIETY: Heart,
-	RELAXATION: Smile,
-	MEDITATION: Brain,
-	BEGINNER: Heart,
 	DAILY_PRACTICE: Zap,
-	ENERGY: Zap,
 	SLEEP: Moon
 };
 
 const CATEGORY_LABELS = {
 	ACUTE_ANXIETY: "Gestion Anxiété",
-	RELAXATION: "Relaxation",
-	MEDITATION: "Méditation",
-	BEGINNER: "Débutant",
 	DAILY_PRACTICE: "Pratique Quotidienne",
-	ENERGY: "Boost Énergie",
 	SLEEP: "Aide au Sommeil"
 };
 
 const CATEGORY_DESCRIPTIONS = {
 	ACUTE_ANXIETY: "Techniques rapides pour calmer l'anxiété et le stress",
-	RELAXATION: "Exercices pour la détente profonde et la récupération",
-	MEDITATION: "Pratiques pour la concentration et la pleine conscience",
-	BEGINNER: "Exercices simples pour débuter en douceur",
 	DAILY_PRACTICE: "Routines quotidiennes pour maintenir l'équilibre",
-	ENERGY: "Techniques énergisantes pour dynamiser le corps",
 	SLEEP: "Préparation au sommeil et relaxation nocturne"
 };
 
@@ -125,7 +113,7 @@ export default function BreathingProgramPage() {
 							</Link>
 						</Button>
 						<div>
-							<h1 className="text-2xl font-bold">Programmes de Respiration</h1>
+							<h1 className="text-2xl font-bold">Programmes de respiration</h1>
 							<p className="text-muted-foreground text-sm">Choisissez le parcours adapté à vos besoins</p>
 						</div>
 					</div>
@@ -139,7 +127,7 @@ export default function BreathingProgramPage() {
 							<CardHeader>
 								<CardTitle className="text-primary flex items-center gap-2">
 									<CheckCircle className="h-5 w-5" />
-									Programme Actuel
+									Programme actuel
 								</CardTitle>
 								<CardDescription>
 									Ce programme sera utilisé dans vos sessions de respiration
@@ -151,7 +139,7 @@ export default function BreathingProgramPage() {
 
 					<div className="space-y-4">
 						<div>
-							<h2 className="text-xl font-semibold">Choisir un Objectif</h2>
+							<h2 className="text-xl font-semibold">Choisir un programme</h2>
 							<p className="text-muted-foreground text-sm">
 								Sélectionnez un programme adapté à votre état actuel
 							</p>

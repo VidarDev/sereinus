@@ -1,231 +1,254 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import type { SavedSessionData, SessionCompletionData } from "@/vue/features/breathing-session/types/session.types";
-import { SiteConfig } from "@/vue/site-config";
+import {
+	type BreathingSessionData,
+	deleteCrisis,
+	getAllCrises,
+	saveBreathingSession,
+	type SerializableCrisis
+} from "@/app/actions";
+import { generateUID, getFromLocalStorage, saveToLocalStorage } from "@/vue/lib/utils";
+import { SiteConfig } from "../site-config";
 
-const STORAGE_KEY = `${SiteConfig.appId}-session-history`;
-
-export interface SessionHistoryStats {
-	totalSessions: number;
-	totalDuration: number;
-	averageEfficiency: number;
-	longestStreak: number;
-	currentStreak: number;
-	monthlyData: {
-		date: string;
-		sessions: number;
-		avgEfficiency: number;
-		totalDuration: number;
-	}[];
+export interface SessionHistoryEntry {
+	id: string;
+	uid: string;
+	datetime: Date;
+	duration: number;
+	protocolId?: string;
+	protocolName?: string;
+	cycleCount?: number;
+	efficiency?: number;
+	averageCycleTime?: number;
+	note?: string;
 }
 
-export const useSessionHistory = () => {
-	const [sessions, setSessions] = useState<SavedSessionData[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
+const SESSIONS_STORAGE_KEY = `${SiteConfig.appId}-session-history`;
+const USER_ID_KEY = `${SiteConfig.appId}-user-id`;
 
-	useEffect(() => {
+function getUserId(): string {
+	try {
+		const existingUserId = localStorage.getItem(USER_ID_KEY);
+		if (existingUserId) {
+			return existingUserId;
+		}
+
+		const newUserId = generateUID();
+		localStorage.setItem(USER_ID_KEY, newUserId);
+		return newUserId;
+	} catch (error) {
+		console.error("Erreur lors de la gestion de l'ID utilisateur:", error);
+		return `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+	}
+}
+
+export const useSessionHistoryClean = () => {
+	const [sessions, setSessions] = useState<SessionHistoryEntry[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	const loadSessions = async () => {
 		try {
-			const stored = localStorage.getItem(STORAGE_KEY);
-			if (stored) {
-				const parsed = JSON.parse(stored);
-				const validSessions = parsed
-					.map((session: SavedSessionData) => ({
-						...session,
-						completedAt: new Date(session.completedAt)
-					}))
-					.filter((session: SavedSessionData) => session.id && session.protocolId && session.duration > 0);
-				setSessions(validSessions);
+			setIsLoading(true);
+			setError(null);
+
+			const localSessions = (getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || []).map(
+				(session) => ({
+					...session,
+					datetime: new Date(session.datetime)
+				})
+			);
+			const userId = getUserId();
+
+			const result = await getAllCrises(userId);
+
+			if (!result.success || !result.data) {
+				setSessions(localSessions);
+				setError(result.error || "Erreur lors du chargement depuis le serveur");
+				return;
 			}
-		} catch (error) {
-			console.error("Erreur lors du chargement de l'historique:", error);
-			setSessions([]);
+
+			const serverSessions = result.data
+				.filter((crisis: SerializableCrisis) => crisis.isBreathingSession)
+				.map((crisis: SerializableCrisis) => {
+					const datetime = new Date(crisis.datetime);
+					// Validate the date
+					if (isNaN(datetime.getTime())) {
+						console.warn("Invalid date for crisis:", crisis.datetime);
+						return null;
+					}
+					return {
+						id: crisis.id || `${datetime.getTime()}`,
+						uid: crisis.id || generateUID(),
+						datetime,
+						duration: parseInt(crisis.duration.replace(/[^\d]/g, "")) || 0,
+						protocolId: crisis.protocolId || "",
+						protocolName: crisis.protocolName || "Protocole inconnu",
+						cycleCount: crisis.cycleCount || 0,
+						efficiency: crisis.efficiency || 0,
+						averageCycleTime: crisis.averageCycleTime || 0,
+						note: crisis.note
+					};
+				})
+				.filter(Boolean); // Remove null entries
+
+			const allSessions = [...localSessions];
+			serverSessions.forEach((serverSession) => {
+				if (serverSession && !allSessions.find((local) => local.uid === serverSession.uid)) {
+					allSessions.push(serverSession);
+				}
+			});
+
+			allSessions.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
+
+			setSessions(allSessions);
+			saveToLocalStorage(SESSIONS_STORAGE_KEY, allSessions);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Erreur lors du chargement des sessions");
 		} finally {
 			setIsLoading(false);
 		}
-	}, []);
+	};
 
-	const saveToStorage = useCallback((newSessions: SavedSessionData[]) => {
+	const saveSession = async (sessionData: {
+		duration: number;
+		protocolId: string;
+		protocolName: string;
+		cycleCount: number;
+		efficiency: number;
+		averageCycleTime: number;
+		note?: string;
+	}) => {
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(newSessions));
-		} catch (error) {
-			console.error("Erreur lors de la sauvegarde de l'historique:", error);
-		}
-	}, []);
-
-	const saveSession = useCallback(
-		async (completionData: SessionCompletionData, note?: string) => {
-			const newSession: SavedSessionData = {
-				id: `session-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-				protocolId: completionData.protocolId,
-				protocolName: completionData.protocolName,
-				duration: completionData.sessionData.duration,
-				cycleCount: completionData.sessionData.cycleCount,
-				completedAt: completionData.sessionData.completedAt,
-				note: note?.trim(),
-				efficiency: completionData.metrics.efficiency,
-				averageCycleTime: completionData.metrics.averageCycleTime
+			const uid = generateUID();
+			const userId = getUserId();
+			const sessionEntry: SessionHistoryEntry = {
+				id: "",
+				uid,
+				datetime: new Date(),
+				duration: sessionData.duration,
+				protocolId: sessionData.protocolId,
+				protocolName: sessionData.protocolName,
+				cycleCount: sessionData.cycleCount,
+				efficiency: sessionData.efficiency,
+				averageCycleTime: sessionData.averageCycleTime,
+				note: sessionData.note
 			};
 
-			const updatedSessions = [newSession, ...sessions].sort(
-				(a, b) => b.completedAt.getTime() - a.completedAt.getTime()
-			);
+			const currentSessions = getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || [];
+			currentSessions.unshift(sessionEntry);
+			saveToLocalStorage(SESSIONS_STORAGE_KEY, currentSessions);
 
-			setSessions(updatedSessions);
-			saveToStorage(updatedSessions);
-		},
-		[sessions, saveToStorage]
-	);
+			setSessions(currentSessions);
 
-	const updateSessionNote = useCallback(
-		(sessionId: string, note: string) => {
-			const updatedSessions = sessions.map((session) =>
-				session.id === sessionId ? { ...session, note: note.trim() || undefined } : session
-			);
-
-			setSessions(updatedSessions);
-			saveToStorage(updatedSessions);
-		},
-		[sessions, saveToStorage]
-	);
-
-	const deleteSession = useCallback(
-		(sessionId: string) => {
-			const updatedSessions = sessions.filter((session) => session.id !== sessionId);
-			setSessions(updatedSessions);
-			saveToStorage(updatedSessions);
-		},
-		[sessions, saveToStorage]
-	);
-
-	const getStats = useCallback((): SessionHistoryStats => {
-		if (sessions.length === 0) {
-			return {
-				totalSessions: 0,
-				totalDuration: 0,
-				averageEfficiency: 0,
-				longestStreak: 0,
-				currentStreak: 0,
-				monthlyData: []
+			const breathingSessionData: BreathingSessionData = {
+				date: sessionEntry.datetime,
+				duration: sessionData.duration,
+				protocolId: sessionData.protocolId,
+				protocolName: sessionData.protocolName,
+				cycleCount: sessionData.cycleCount,
+				efficiency: sessionData.efficiency,
+				averageCycleTime: sessionData.averageCycleTime,
+				note: sessionData.note
 			};
-		}
 
-		const totalDuration = sessions.reduce((sum, session) => sum + session.duration, 0);
-		const averageEfficiency = sessions.reduce((sum, session) => sum + session.efficiency, 0) / sessions.length;
+			const result = await saveBreathingSession(breathingSessionData, userId);
 
-		const sessionsByDate = new Map<string, number>();
-		sessions.forEach((session) => {
-			const dateKey = session.completedAt.toISOString().split("T")[0];
-			sessionsByDate.set(dateKey, (sessionsByDate.get(dateKey) || 0) + 1);
-		});
-
-		const sortedDates = Array.from(sessionsByDate.keys()).sort();
-		let currentStreak = 0;
-		let longestStreak = 0;
-		let tempStreak = 0;
-
-		const today = new Date().toISOString().split("T")[0];
-		const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-
-		if (sessionsByDate.has(today)) {
-			currentStreak = 1;
-			const checkDate = new Date(today);
-			checkDate.setDate(checkDate.getDate() - 1);
-
-			while (sessionsByDate.has(checkDate.toISOString().split("T")[0])) {
-				currentStreak++;
-				checkDate.setDate(checkDate.getDate() - 1);
-			}
-		} else if (sessionsByDate.has(yesterday)) {
-			currentStreak = 0;
-		}
-
-		for (let i = 0; i < sortedDates.length; i++) {
-			const currentDate = new Date(sortedDates[i]);
-			const expectedDate = i === 0 ? currentDate : new Date(sortedDates[i - 1]);
-			expectedDate.setDate(expectedDate.getDate() + 1);
-
-			if (i === 0 || currentDate.getTime() === expectedDate.getTime()) {
-				tempStreak++;
-				longestStreak = Math.max(longestStreak, tempStreak);
+			if (result.success) {
+				await loadSessions();
 			} else {
-				tempStreak = 1;
+				console.warn("Sauvegarde serveur échouée, session conservée en local:", result.error);
 			}
+
+			return true;
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Erreur lors de la sauvegarde");
+			return false;
 		}
+	};
 
-		const monthlyData: SessionHistoryStats["monthlyData"] = [];
-		const thirtyDaysAgo = new Date();
-		thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+	const deleteSession = async (sessionId: string) => {
+		try {
+			const userId = getUserId();
+			const currentSessions = getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || [];
+			const updatedSessions = currentSessions.filter(
+				(session) => session.uid !== sessionId && session.id !== sessionId
+			);
+			saveToLocalStorage(SESSIONS_STORAGE_KEY, updatedSessions);
 
-		const recentSessions = sessions.filter((session) => session.completedAt >= thirtyDaysAgo);
-		const dayGroups = new Map<string, SavedSessionData[]>();
+			setSessions(updatedSessions);
 
-		recentSessions.forEach((session) => {
-			const dateKey = session.completedAt.toISOString().split("T")[0];
-			if (!dayGroups.has(dateKey)) {
-				dayGroups.set(dateKey, []);
+			const sessionToDelete = currentSessions.find(
+				(session) => session.uid === sessionId || session.id === sessionId
+			);
+
+			if (sessionToDelete?.id) {
+				const result = await deleteCrisis(userId, sessionToDelete.id);
+
+				if (!result.success) {
+					console.warn("Suppression serveur échouée:", result.error);
+				}
 			}
-			const existingGroup = dayGroups.get(dateKey);
-			if (existingGroup) {
-				existingGroup.push(session);
-			}
-		});
 
-		dayGroups.forEach((daySessions, date) => {
-			const totalDuration = daySessions.reduce((sum, s) => sum + s.duration, 0);
-			const avgEfficiency = daySessions.reduce((sum, s) => sum + s.efficiency, 0) / daySessions.length;
+			return true;
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Erreur lors de la suppression");
+			return false;
+		}
+	};
 
-			monthlyData.push({
-				date,
-				sessions: daySessions.length,
-				avgEfficiency,
-				totalDuration
+	const updateSessionNote = async (sessionId: string, note: string) => {
+		try {
+			const currentSessions = getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || [];
+			const updatedSessions = currentSessions.map((session) => {
+				if (session.uid === sessionId || session.id === sessionId) {
+					return { ...session, note };
+				}
+				return session;
 			});
-		});
 
-		monthlyData.sort((a, b) => a.date.localeCompare(b.date));
+			saveToLocalStorage(SESSIONS_STORAGE_KEY, updatedSessions);
+			setSessions(updatedSessions);
+
+			return true;
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Erreur lors de la mise à jour");
+			return false;
+		}
+	};
+
+	const getStats = () => {
+		const totalSessions = sessions.length;
+		const totalDuration = sessions.reduce((sum, session) => sum + session.duration, 0);
+		const averageEfficiency =
+			sessions.length > 0
+				? sessions.reduce((sum, session) => sum + (session.efficiency || 0), 0) / sessions.length
+				: 0;
 
 		return {
-			totalSessions: sessions.length,
+			totalSessions,
 			totalDuration,
 			averageEfficiency,
-			longestStreak,
-			currentStreak,
-			monthlyData
+			currentStreak: 0,
+			longestStreak: 0,
+			averageDuration: totalSessions > 0 ? totalDuration / totalSessions : 0
 		};
-	}, [sessions]);
+	};
 
-	const getThisMonthSessions = useCallback(() => {
-		const now = new Date();
-		const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-		return sessions.filter((session) => session.completedAt >= startOfMonth);
-	}, [sessions]);
-
-	const getRecentSessions = useCallback(
-		(days = 7) => {
-			const cutoffDate = new Date();
-			cutoffDate.setDate(cutoffDate.getDate() - days);
-
-			return sessions.filter((session) => session.completedAt >= cutoffDate);
-		},
-		[sessions]
-	);
+	useEffect(() => {
+		loadSessions();
+	}, []);
 
 	return {
-		// Data
 		sessions,
 		isLoading,
-
-		// Actions
+		error,
 		saveSession,
-		updateSessionNote,
 		deleteSession,
-
-		// Utilities
+		updateSessionNote,
 		getStats,
-		getThisMonthSessions,
-		getRecentSessions
+		reloadSessions: loadSessions
 	};
 };

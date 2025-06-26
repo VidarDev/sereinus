@@ -2,7 +2,7 @@
 
 import { BreathingProtocol } from "@/main/domain/BreathingProtocol";
 import { BreathingSessionContainer } from "@/vue/features/breathing-session";
-import { useBreathingProtocolsClean } from "@/vue/hooks/useBreathingProtocolsClean";
+import { useBreathingProtocolsClean } from "@/vue/hooks/useBreathingProtocols";
 import { useBreathingSVGShape } from "@/vue/hooks/useBreathingSVGShape";
 import { SiteConfig } from "@/vue/site-config";
 

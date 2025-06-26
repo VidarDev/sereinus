@@ -1,21 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Calendar, Clock, Edit3, Eye, LineChart, Trash2, TrendingUp, Zap } from "lucide-react";
 
 import { Button } from "@/vue/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/vue/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/vue/components/ui/dialog";
 import type { SavedSessionData } from "@/vue/features/settings/types/history.types";
-import { useSessionHistory } from "@/vue/hooks/useSessionHistory";
+import { useSessionHistoryClean } from "@/vue/hooks/useSessionHistory";
 import { cn } from "@/vue/lib/utils";
 
 interface HistorySectionProps {
 	className?: string;
 }
 
-export const HistorySection = ({ className }: HistorySectionProps) => {
-	const { sessions, isLoading, getStats, deleteSession, updateSessionNote } = useSessionHistory();
+export function HistorySection({ className }: HistorySectionProps) {
+	const { sessions: rawSessions, getStats, updateSessionNote, deleteSession, isLoading } = useSessionHistoryClean();
+
+	const sessions = useMemo((): SavedSessionData[] => {
+		return rawSessions
+			.filter((session) => session.protocolName)
+			.map((session) => {
+				const completedAt = new Date(session.datetime);
+				// Skip sessions with invalid dates
+				if (isNaN(completedAt.getTime())) {
+					console.warn("Invalid date for session:", session.datetime);
+					return null;
+				}
+				return {
+					id: session.uid,
+					protocolId: session.protocolId || "",
+					protocolName: session.protocolName || "Protocole inconnu",
+					duration: session.duration,
+					cycleCount: session.cycleCount || 0,
+					completedAt,
+					note: session.note,
+					efficiency: session.efficiency || 0,
+					averageCycleTime: session.averageCycleTime || 0
+				};
+			})
+			.filter((session) => session !== null) as SavedSessionData[];
+	}, [rawSessions]);
+
 	const [editingSession, setEditingSession] = useState<SavedSessionData | null>(null);
 	const [viewingSession, setViewingSession] = useState<SavedSessionData | null>(null);
 	const [editNote, setEditNote] = useState("");
@@ -30,6 +56,9 @@ export const HistorySection = ({ className }: HistorySectionProps) => {
 	};
 
 	const formatDate = (date: Date) => {
+		if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+			return "Date invalide";
+		}
 		return new Intl.DateTimeFormat("fr-FR", {
 			day: "numeric",
 			month: "short",
@@ -39,6 +68,9 @@ export const HistorySection = ({ className }: HistorySectionProps) => {
 	};
 
 	const formatFullDate = (date: Date) => {
+		if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+			return "Date invalide";
+		}
 		return new Intl.DateTimeFormat("fr-FR", {
 			weekday: "long",
 			year: "numeric",
@@ -157,16 +189,16 @@ export const HistorySection = ({ className }: HistorySectionProps) => {
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-3">
-						{recentSessions.map((session) => (
+						{recentSessions.map((session, index) => (
 							<div
-								key={session.id}
+								key={`${session.id}-${session.completedAt?.getTime()}-${index}`}
 								className="border-border hover:bg-muted/50 rounded-lg border p-3 transition-colors"
 							>
 								<div className="mb-3 flex items-start justify-between">
 									<div className="min-w-0 flex-1">
 										<h3 className="text-md truncate font-medium">{session.protocolName}</h3>
 										<p className="text-muted-foreground mt-1 text-sm">
-											{formatDate(session.completedAt)}
+											{session.completedAt ? formatDate(session.completedAt) : "Date inconnue"}
 										</p>
 									</div>
 									<div className="ml-2 flex items-center gap-1">
@@ -232,7 +264,7 @@ export const HistorySection = ({ className }: HistorySectionProps) => {
 						<DialogTitle>Note de session</DialogTitle>
 						<DialogDescription>
 							{viewingSession?.protocolName} -{" "}
-							{viewingSession && formatFullDate(viewingSession.completedAt)}
+							{viewingSession?.completedAt ? formatFullDate(viewingSession.completedAt) : "Date inconnue"}
 						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4">
@@ -284,7 +316,8 @@ export const HistorySection = ({ className }: HistorySectionProps) => {
 					<DialogHeader>
 						<DialogTitle>Modifier la note</DialogTitle>
 						<DialogDescription>
-							{editingSession?.protocolName} - {editingSession && formatDate(editingSession.completedAt)}
+							{editingSession?.protocolName} -{" "}
+							{editingSession?.completedAt ? formatDate(editingSession.completedAt) : "Date inconnue"}
 						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4">
@@ -312,4 +345,4 @@ export const HistorySection = ({ className }: HistorySectionProps) => {
 			</Dialog>
 		</div>
 	);
-};
+}

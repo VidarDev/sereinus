@@ -11,7 +11,15 @@ export class CrisesUiPresenter implements Presenter<Crisis[], CrisisViewModel[] 
 					crisis.datetime,
 					this.formatTime(crisis.datetime),
 					this.formatDuration(crisis.duration),
-					crisis.note
+					crisis.note,
+					{
+						id: crisis.id,
+						protocolId: crisis.protocolId,
+						protocolName: crisis.protocolName,
+						cycleCount: crisis.cycleCount,
+						efficiency: crisis.efficiency,
+						averageCycleTime: crisis.averageCycleTime
+					}
 				)
 		);
 	}
