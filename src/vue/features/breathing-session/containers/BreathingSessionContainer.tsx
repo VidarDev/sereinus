@@ -22,6 +22,8 @@ export const BreathingSessionContainer = ({ className }: BreathingSessionContain
 	const { selectedProtocol: selectedProtocolViewModel } = useBreathingProtocolsClean();
 	const { shape } = useBreathingSVGShape();
 
+	const { soundEnabled, hapticEnabled, toggleSound, toggleHaptic } = useAudioHaptic();
+
 	const {
 		isActive,
 		isPaused,
@@ -31,11 +33,15 @@ export const BreathingSessionContainer = ({ className }: BreathingSessionContain
 		startSession,
 		pauseSession,
 		resumeSession,
-		stopSession
+		stopSession,
+		updateSettings
 		// @ts-expect-error - is not typed correctly
-	} = useBreathingSession(selectedProtocolViewModel);
+	} = useBreathingSession(selectedProtocolViewModel, {
+		hapticEnabled,
+		soundEnabled: false,
+		wakeLockEnabled: true
+	});
 
-	const { soundEnabled, hapticEnabled, toggleSound, toggleHaptic } = useAudioHaptic();
 	const { saveSession } = useSessionHistoryClean();
 
 	const {
@@ -92,6 +98,10 @@ export const BreathingSessionContainer = ({ className }: BreathingSessionContain
 			stopMusic();
 		}
 	}, [isActive, isPaused, soundEnabled, startMusic, stopMusic, pauseMusic, isMusicPlaying, musicVolume]);
+
+	useEffect(() => {
+		updateSettings({ hapticEnabled });
+	}, [hapticEnabled, updateSettings]);
 
 	const handleSaveSession = useCallback(
 		async (note?: string) => {
