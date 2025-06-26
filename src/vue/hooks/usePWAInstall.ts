@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { PWAInstallationService } from "@/main/presentation/services/installation-pwa.service";
 import type {
 	BeforeInstallPromptEvent,
+	NavigatorWithStandalone,
 	PWAInstallationResult,
 	PWAInstallationState
 } from "@/vue/features/pwa/types/pwa";
@@ -28,6 +29,12 @@ export function usePWAInstall() {
 			setIsLoading(true);
 			const state = await installationService.getInstallationState();
 			setInstallationState(state);
+
+			if (state.isInstalled) {
+				document.cookie = "pwa-installed=true; path=/; max-age=31536000; SameSite=Lax";
+			} else {
+				document.cookie = "pwa-installed=false; path=/; max-age=0; SameSite=Lax";
+			}
 		} catch (error) {
 			console.error("[PWA Hook] Failed to update state:", error);
 			if (retryCount < 3) {
@@ -135,6 +142,38 @@ export function usePWAInstall() {
 			return () => clearInterval(interval);
 		}
 	}, [installationState.platform, installationState.canInstall, updateInstallationState]);
+
+	// Effect to immediately detect standalone mode on mount
+	useEffect(() => {
+		const checkStandaloneMode = () => {
+			if (typeof window === "undefined") return;
+
+			const isStandalone =
+				window.matchMedia("(display-mode: standalone)").matches ||
+				("standalone" in window.navigator &&
+					(window.navigator as NavigatorWithStandalone).standalone === true) ||
+				window.matchMedia("(display-mode: minimal-ui)").matches ||
+				window.matchMedia("(display-mode: fullscreen)").matches;
+
+			if (isStandalone) {
+				document.cookie = "pwa-installed=true; path=/; max-age=31536000; SameSite=Lax";
+			}
+		};
+
+		checkStandaloneMode();
+
+		const mediaQuery = window.matchMedia("(display-mode: standalone)");
+		const handleChange = () => checkStandaloneMode();
+
+		if (mediaQuery.addEventListener) {
+			mediaQuery.addEventListener("change", handleChange);
+			return () => mediaQuery.removeEventListener("change", handleChange);
+		} else {
+			// Fallback for older browsers
+			mediaQuery.addListener(handleChange);
+			return () => mediaQuery.removeListener(handleChange);
+		}
+	}, []);
 
 	// Memoized values
 	const memoizedValues = useMemo(

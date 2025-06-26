@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
+
 	const isPWAInstalled =
 		request.cookies.get("pwa-installed")?.value === "true" || request.headers.get("X-PWA-Installed") === "true";
 
@@ -10,8 +11,10 @@ export function middleware(request: NextRequest) {
 		const appUrl = new URL("/app", request.url);
 		return NextResponse.redirect(appUrl);
 	}
+
 	return NextResponse.next();
 }
+
 export const config = {
 	matcher: [
 		/*
