@@ -139,20 +139,21 @@ export const BreathingSessionContainer = ({ className }: BreathingSessionContain
 
 	if (!selectedProtocolViewModel) {
 		return (
-			<div className="flex h-screen items-center justify-center">
+			<div className="flex h-screen items-center justify-center overflow-hidden">
 				<p className="text-muted-foreground">Aucun protocole sélectionné</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className={cn("relative min-h-screen", className)}>
+		<div className={cn("relative flex h-screen flex-col overflow-hidden", className)}>
 			{isActive && (
 				<motion.div
-					className="bg-background fixed top-0 right-0 left-0 z-10"
+					className="bg-background safe-area-inset-top fixed top-0 right-0 left-0 z-10"
 					initial={{ opacity: 0, y: -20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, ease: "easeOut" }}
+					style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
 				>
 					<div className="container mx-auto px-4 py-4">
 						<div className="space-y-2 text-center">
@@ -189,7 +190,7 @@ export const BreathingSessionContainer = ({ className }: BreathingSessionContain
 				</motion.div>
 			)}
 
-			<div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center px-4">
+			<div className="flex flex-1 items-center justify-center px-4">
 				<SessionAnimation
 					phase={currentPhase}
 					isActive={isActive}

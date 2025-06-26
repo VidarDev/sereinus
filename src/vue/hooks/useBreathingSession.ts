@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { BreathingProtocol } from "@/main/domain/BreathingProtocol";
 import type { SessionSettings } from "@/main/domain/BreathingSession";
 import type { BreathingPhase } from "@/vue/features/breathing-session/types/session.types";
+import { useHapticFeedback } from "./useHapticFeedback";
 
 export interface SessionData {
 	duration: number;
@@ -62,6 +63,9 @@ export function useBreathingSession(
 	const [totalTime, setTotalTime] = useState(0);
 	const [settings, setSettings] = useState(initialSettings);
 
+	// Hooks
+	const { vibrate } = useHapticFeedback();
+
 	// Refs
 	const phaseTimerRef = useRef<NodeJS.Timeout | null>(null);
 	const totalTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -79,17 +83,17 @@ export function useBreathingSession(
 
 	// Haptic feedback
 	const triggerHaptic = useCallback(() => {
-		if (settings.hapticEnabled && "vibrate" in navigator) {
+		if (settings.hapticEnabled) {
 			const patterns = {
-				inhale: [100],
-				hold1: [50, 50, 50],
-				exhale: [150],
-				hold2: [25],
-				idle: [25]
+				inhale: "inhale" as const,
+				hold1: "hold" as const,
+				exhale: "exhale" as const,
+				hold2: "light" as const,
+				idle: "light" as const
 			};
-			navigator.vibrate(patterns[currentPhase] || [50]);
+			vibrate(patterns[currentPhase] || "tap");
 		}
-	}, [settings.hapticEnabled, currentPhase]);
+	}, [settings.hapticEnabled, currentPhase, vibrate]);
 
 	const nextPhase = useCallback(() => {
 		if (!isActive || isPaused) return;
@@ -218,15 +222,15 @@ export function useBreathingSession(
 
 				setCurrentPhase(nextPhaseType);
 
-				if (settings.hapticEnabled && "vibrate" in navigator) {
-					const patterns: Record<BreathingPhase, number[]> = {
-						inhale: [100],
-						hold1: [50, 50, 50],
-						exhale: [150],
-						hold2: [25],
-						idle: [25]
+				if (settings.hapticEnabled) {
+					const patterns = {
+						inhale: "inhale" as const,
+						hold1: "hold" as const,
+						exhale: "exhale" as const,
+						hold2: "light" as const,
+						idle: "light" as const
 					};
-					navigator.vibrate(patterns[nextPhaseType] || [50]);
+					vibrate(patterns[nextPhaseType] || "tap");
 				}
 			}, phaseDuration * 1000);
 		}
@@ -237,7 +241,7 @@ export function useBreathingSession(
 				phaseTimerRef.current = null;
 			}
 		};
-	}, [isActive, isPaused, currentPhase, protocol, settings.hapticEnabled, activePhases]);
+	}, [isActive, isPaused, currentPhase, protocol, settings.hapticEnabled, activePhases, vibrate]);
 
 	useEffect(() => {
 		return () => {

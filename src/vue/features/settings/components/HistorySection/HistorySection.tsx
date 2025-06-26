@@ -259,7 +259,7 @@ export function HistorySection({ className }: HistorySectionProps) {
 
 			{/* Modal details */}
 			<Dialog open={!!viewingSession} onOpenChange={() => setViewingSession(null)}>
-				<DialogContent className="max-w-md">
+				<DialogContent className="max-w-md" disableAutoFocus>
 					<DialogHeader>
 						<DialogTitle>Note de session</DialogTitle>
 						<DialogDescription>
@@ -312,7 +312,7 @@ export function HistorySection({ className }: HistorySectionProps) {
 
 			{/* Modal edit */}
 			<Dialog open={!!editingSession} onOpenChange={() => setEditingSession(null)}>
-				<DialogContent className="max-w-md">
+				<DialogContent className="max-w-md" disableAutoFocus>
 					<DialogHeader>
 						<DialogTitle>Modifier la note</DialogTitle>
 						<DialogDescription>

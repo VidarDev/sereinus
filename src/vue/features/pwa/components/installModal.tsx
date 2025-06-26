@@ -15,7 +15,7 @@ interface InstallModalProps {
 export const InstallModal = memo<InstallModalProps>(({ open, onClose, title, children, className }) => {
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className={className}>
+			<DialogContent className={className} disableAutoFocus>
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 					<DialogDescription className="mt-4">
