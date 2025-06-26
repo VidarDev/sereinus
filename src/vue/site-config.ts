@@ -1,7 +1,7 @@
 export const SiteConfig = {
-	title: "Amai",
-	short_name: "Amai",
-	description: "Amai",
+	title: "Amaï",
+	short_name: "Amaï",
+	description: "Amaï",
 	categories: ["education", "learning", "training"],
 	prodUrl: "https://sereinus.vercel.app/",
 	appId: "amai",

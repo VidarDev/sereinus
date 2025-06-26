@@ -54,12 +54,29 @@ export const useSessionHistoryClean = () => {
 			setIsLoading(true);
 			setError(null);
 
-			const localSessions = (getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || []).map(
-				(session) => ({
+			// Clean up localStorage duplicates first
+			const rawLocalSessions = getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || [];
+			const cleanedLocalSessions = rawLocalSessions
+				.map((session) => ({
 					...session,
 					datetime: new Date(session.datetime)
-				})
-			);
+				}))
+				.filter((session, index, array) => {
+					// Remove duplicates based on datetime, protocol and duration
+					return !array.slice(0, index).some((existing) => {
+						const timeDiff = Math.abs(session.datetime.getTime() - existing.datetime.getTime());
+						const sameProtocol = session.protocolId === existing.protocolId;
+						const sameDuration = Math.abs(session.duration - existing.duration) < 1000;
+						return timeDiff < 60000 && sameProtocol && sameDuration;
+					});
+				});
+
+			// Save cleaned sessions back to localStorage
+			if (cleanedLocalSessions.length !== rawLocalSessions.length) {
+				saveToLocalStorage(SESSIONS_STORAGE_KEY, cleanedLocalSessions);
+			}
+
+			const localSessions = cleanedLocalSessions;
 			const userId = getUserId();
 
 			const result = await getAllCrises(userId);
@@ -74,16 +91,36 @@ export const useSessionHistoryClean = () => {
 				.filter((crisis: SerializableCrisis) => crisis.isBreathingSession)
 				.map((crisis: SerializableCrisis) => {
 					const datetime = new Date(crisis.datetime);
-					// Validate the date
 					if (isNaN(datetime.getTime())) {
 						console.warn("Invalid date for crisis:", crisis.datetime);
 						return null;
 					}
+
+					const parseDuration = (durationStr: string): number => {
+						let totalMs = 0;
+
+						const hoursMatch = durationStr.match(/(\d+)h/);
+						const minutesMatch = durationStr.match(/(\d+)min/);
+						const secondsMatch = durationStr.match(/(\d+)s/);
+
+						if (hoursMatch) {
+							totalMs += parseInt(hoursMatch[1]) * 60 * 60 * 1000;
+						}
+						if (minutesMatch) {
+							totalMs += parseInt(minutesMatch[1]) * 60 * 1000;
+						}
+						if (secondsMatch) {
+							totalMs += parseInt(secondsMatch[1]) * 1000;
+						}
+
+						return totalMs || 0;
+					};
+
 					return {
 						id: crisis.id || `${datetime.getTime()}`,
 						uid: crisis.id || generateUID(),
 						datetime,
-						duration: parseInt(crisis.duration.replace(/[^\d]/g, "")) || 0,
+						duration: parseDuration(crisis.duration),
 						protocolId: crisis.protocolId || "",
 						protocolName: crisis.protocolName || "Protocole inconnu",
 						cycleCount: crisis.cycleCount || 0,
@@ -96,8 +133,26 @@ export const useSessionHistoryClean = () => {
 
 			const allSessions = [...localSessions];
 			serverSessions.forEach((serverSession) => {
-				if (serverSession && !allSessions.find((local) => local.uid === serverSession.uid)) {
-					allSessions.push(serverSession);
+				if (serverSession) {
+					const isDuplicate = allSessions.find((local) => {
+						if (local.id && serverSession.id && local.id === serverSession.id) {
+							return true;
+						}
+						if (local.uid && serverSession.uid && local.uid === serverSession.uid) {
+							return true;
+						}
+						const timeDiff = Math.abs(
+							new Date(local.datetime).getTime() - new Date(serverSession.datetime).getTime()
+						);
+						const sameProtocol = local.protocolId === serverSession.protocolId;
+						const sameDuration = Math.abs(local.duration - serverSession.duration) < 1000;
+
+						return timeDiff < 60000 && sameProtocol && sameDuration;
+					});
+
+					if (!isDuplicate) {
+						allSessions.push(serverSession);
+					}
 				}
 			});
 
@@ -137,12 +192,6 @@ export const useSessionHistoryClean = () => {
 				note: sessionData.note
 			};
 
-			const currentSessions = getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || [];
-			currentSessions.unshift(sessionEntry);
-			saveToLocalStorage(SESSIONS_STORAGE_KEY, currentSessions);
-
-			setSessions(currentSessions);
-
 			const breathingSessionData: BreathingSessionData = {
 				date: sessionEntry.datetime,
 				duration: sessionData.duration,
@@ -160,6 +209,10 @@ export const useSessionHistoryClean = () => {
 				await loadSessions();
 			} else {
 				console.warn("Sauvegarde serveur échouée, session conservée en local:", result.error);
+				const currentSessions = getFromLocalStorage<SessionHistoryEntry[]>(SESSIONS_STORAGE_KEY) || [];
+				currentSessions.unshift(sessionEntry);
+				saveToLocalStorage(SESSIONS_STORAGE_KEY, currentSessions);
+				setSessions(currentSessions);
 			}
 
 			return true;
