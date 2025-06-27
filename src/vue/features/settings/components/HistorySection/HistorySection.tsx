@@ -16,7 +16,6 @@ interface HistorySectionProps {
 
 export function HistorySection({ className }: HistorySectionProps) {
 	const { sessions: rawSessions, getStats, updateSessionNote, deleteSession, isLoading } = useSessionHistoryClean();
-
 	const sessions = useMemo((): SavedSessionData[] => {
 		return rawSessions
 			.filter((session) => session.protocolName)

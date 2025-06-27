@@ -12,7 +12,7 @@ export interface SessionHistoryEntry {
 	uid: string;
 	datetime: Date;
 	duration: number;
-	note: string;
+	note?: string;
 	protocolId: string;
 	protocolName: string;
 	cycleCount: number;
@@ -47,6 +47,50 @@ export const useSessionHistoryClean = () => {
 	const [sessions, setSessions] = useState<SessionHistoryEntry[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+
+	const loadSessions = async (): Promise<SessionHistoryEntry[]> => {
+		try {
+			setIsLoading(true);
+			setError(null);
+			const userId = getUserId();
+			const result = await getAllCrises(userId);
+
+			if (!result.success || !result.data) {
+				setError(result.error || "Erreur lors du chargement depuis le serveur");
+				return [];
+			}
+
+			const serverSessions = result.data
+				.filter((crisis: SerializableCrisis) => crisis.isBreathingSession)
+				.map((crisis: SerializableCrisis) => {
+					const datetime = new Date(crisis.datetime);
+
+					return {
+						id: crisis.datetime,
+						uid: crisis.datetime,
+						datetime,
+						duration: parseDuration(crisis.duration),
+						protocolId: crisis.protocolId || "",
+						protocolName: crisis.protocolName || "Protocole inconnu",
+						cycleCount: crisis.cycleCount || 0,
+						efficiency: crisis.efficiency || 0,
+						averageCycleTime: crisis.averageCycleTime || 0,
+						note: crisis.note
+					};
+				})
+				.filter(Boolean)
+				.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
+
+			setSessions(serverSessions);
+
+			return serverSessions;
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Erreur lors du chargement des sessions");
+			return [];
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	const saveSession = async (sessionData: {
 		duration: number;
@@ -196,39 +240,6 @@ export const useSessionHistoryClean = () => {
 		getStats,
 		reloadSessions: loadSessions
 	};
-};
-
-const loadSessions = async () => {
-	const userId = getUserId();
-	const result = await getAllCrises(userId);
-
-	if (!result.success || !result.data) {
-		throw new Error(result.error);
-	}
-
-	return result.data
-		.filter((crisis: SerializableCrisis) => crisis.isBreathingSession)
-		.map((crisis: SerializableCrisis) => {
-			const datetime = new Date(crisis.datetime);
-
-			return {
-				id: crisis.datetime,
-				uid: crisis.datetime,
-				datetime,
-				duration: parseDuration(crisis.duration),
-				note: crisis.note ?? "",
-				protocolId: crisis.protocolId ?? "",
-				protocolName: crisis.protocolName ?? "Protocole inconnu",
-				cycleCount: crisis.cycleCount ?? 0,
-				efficiency: crisis.efficiency ?? 0,
-				averageCycleTime: crisis.averageCycleTime ?? 0
-			} satisfies SessionHistoryEntry;
-		})
-		.filter(Boolean)
-		.sort(
-			(a: SessionHistoryEntry, b: SessionHistoryEntry) =>
-				new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
-		);
 };
 
 const parseDuration = (durationStr: string): number => {
