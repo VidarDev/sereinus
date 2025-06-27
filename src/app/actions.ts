@@ -4,37 +4,26 @@ import { appContainer } from "@/di/container";
 import { DI_SYMBOLS } from "@/di/types";
 import { CrisisController } from "@/main/presentation/controller/Crisis.controller";
 import { CrisisViewModel } from "@/main/presentation/dto/Crisis.viewmodel";
+import { BreathingSessionData } from "@/vue/types/breathingSession.types";
 
-export interface BreathingSessionData {
-	date: Date;
-	duration: number;
-	protocolId: string;
-	protocolName: string;
-	cycleCount: number;
-	efficiency: number;
-	averageCycleTime: number;
-	note?: string;
-}
+export const getAllCrises = async (userId = "user-id") => {
+	const crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
+	const response = await crisisController.getAll(userId);
 
-export interface SerializableCrisis {
-	id: string | undefined;
-	formatedDate: string;
-	datetime: string;
-	time: string;
-	duration: string;
-	note: string | undefined;
-	protocolId: string | undefined;
-	protocolName: string | undefined;
-	cycleCount: number | undefined;
-	efficiency: number | undefined;
-	averageCycleTime: number | undefined;
-	isBreathingSession: boolean;
-	isSimpleCrisis: boolean;
-}
+	if (typeof response === "string") {
+		return {
+			success: false,
+			error: response
+		};
+	}
 
-function serializeCrisis(crisis: CrisisViewModel): SerializableCrisis {
+	const serializedResult = response.map(serializeCrisis);
+
+	return { success: true, data: serializedResult };
+};
+
+const serializeCrisis = (crisis: CrisisViewModel): SerializableCrisis => {
 	return {
-		id: crisis.id,
 		formatedDate: crisis.formatedDate,
 		datetime: crisis.datetime.toISOString(),
 		time: crisis.time,
@@ -48,82 +37,61 @@ function serializeCrisis(crisis: CrisisViewModel): SerializableCrisis {
 		isBreathingSession: crisis.isBreathingSession,
 		isSimpleCrisis: crisis.isSimpleCrisis
 	};
-}
+};
 
-export async function getAllCrises(userId = "user-id") {
-	try {
-		const crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
-		const result = await crisisController.getAll(userId);
+export const saveBreathingSession = async (sessionData: BreathingSessionData, userId = "user-id") => {
+	const crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
+	const response = await crisisController.saveBreathingSession(userId, sessionData);
 
-		if (typeof result === "string") {
-			throw new Error(result);
-		}
-
-		const serializedResult = Array.isArray(result) ? result.map(serializeCrisis) : [];
-
-		return { success: true, data: serializedResult };
-	} catch (error) {
-		console.error("Error in getAllCrises:", error);
+	if (typeof response === "string") {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Erreur lors du chargement des crises"
+			error: response
 		};
 	}
-}
 
-export async function saveBreathingSession(sessionData: BreathingSessionData, userId = "user-id") {
-	try {
-		const crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
-		const result = await crisisController.saveBreathingSession(userId, sessionData);
+	return { success: true };
+};
 
-		if (typeof result === "string") {
-			throw new Error(result);
-		}
+export async function updateCrisis(userId: string, datetime: Date, note: string) {
+	const crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
+	const response = await crisisController.update(userId, datetime, note);
 
-		return { success: true, data: result };
-	} catch (error) {
-		console.error("Error in saveBreathingSession:", error);
+	if (typeof response === "string") {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Erreur lors de la sauvegarde"
+			error: response
 		};
 	}
+
+	return { success: true };
 }
 
-export async function updateCrisis(userId: string, crisisId: string, note: string) {
-	try {
-		const crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
-		const result = await crisisController.update(userId, crisisId, note);
+export async function deleteCrisis(userId: string, datetime: Date) {
+	const crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
+	const response = await crisisController.delete(userId, datetime);
 
-		if (typeof result === "string") {
-			throw new Error(result);
-		}
-
-		return { success: true, data: result };
-	} catch (error) {
-		console.error("Error in updateCrisis:", error);
+	if (typeof response === "string") {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Erreur lors de la mise à jour"
+			error: response
 		};
 	}
+
+	return { success: true };
 }
 
-export async function deleteCrisis(userId: string, crisisId: string) {
-	try {
-		const crisisController = appContainer.get<CrisisController>(DI_SYMBOLS.CrisisController);
-		const result = await crisisController.delete(userId, crisisId);
-
-		if (typeof result === "string") {
-			throw new Error(result);
-		}
-
-		return { success: true, data: result };
-	} catch (error) {
-		console.error("Error in deleteCrisis:", error);
-		return {
-			success: false,
-			error: error instanceof Error ? error.message : "Erreur lors de la suppression"
-		};
-	}
+export interface SerializableCrisis {
+	formatedDate: string;
+	datetime: string;
+	time: string;
+	duration: string;
+	note?: string;
+	protocolId?: string;
+	protocolName?: string;
+	cycleCount?: number;
+	efficiency?: number;
+	averageCycleTime?: number;
+	isBreathingSession: boolean;
+	isSimpleCrisis: boolean;
 }

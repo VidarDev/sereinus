@@ -15,35 +15,37 @@ export class CrisisPrismaDao {
 				userId: userId
 			},
 			orderBy: {
-				datetime: "desc"
+				datetime: "asc"
 			}
 		});
 
 		return data.map((crisis) => {
-			return new CrisisDTO(crisis.userId, crisis.datetime, crisis.duration, crisis.note ?? undefined, {
-				id: crisis.id,
-				protocolId: crisis.protocolId ?? undefined,
-				protocolName: crisis.protocolName ?? undefined,
-				cycleCount: crisis.cycleCount ?? undefined,
-				efficiency: crisis.efficiency ?? undefined,
-				averageCycleTime: crisis.averageCycleTime ?? undefined
-			});
+			return new CrisisDTO(
+				crisis.userId,
+				crisis.datetime,
+				crisis.duration,
+				crisis.note ?? undefined,
+				crisis.protocolId ?? undefined,
+				crisis.protocolName ?? undefined,
+				crisis.cycleCount ?? undefined,
+				crisis.efficiency ?? undefined,
+				crisis.averageCycleTime ?? undefined
+			);
 		});
 	}
 
 	async save(crisis: CrisisDTO): Promise<void> {
 		await this.prisma.crisis.create({
 			data: {
-				id: crisis.id,
 				userId: crisis.userId,
 				datetime: crisis.datetime,
 				duration: crisis.duration,
-				note: crisis.note ?? null,
-				protocolId: crisis.protocolId ?? null,
-				protocolName: crisis.protocolName ?? null,
-				cycleCount: crisis.cycleCount ?? null,
-				efficiency: crisis.efficiency ?? null,
-				averageCycleTime: crisis.averageCycleTime ?? null
+				note: crisis.note,
+				protocolId: crisis.protocolId,
+				protocolName: crisis.protocolName,
+				cycleCount: crisis.cycleCount,
+				efficiency: crisis.efficiency,
+				averageCycleTime: crisis.averageCycleTime
 			}
 		});
 	}
@@ -51,23 +53,29 @@ export class CrisisPrismaDao {
 	async update(crisis: CrisisDTO): Promise<void> {
 		await this.prisma.crisis.update({
 			where: {
-				id: crisis.id
+				userId_datetime: {
+					userId: crisis.userId,
+					datetime: crisis.datetime
+				}
 			},
 			data: {
-				note: crisis.note ?? null,
-				protocolId: crisis.protocolId ?? null,
-				protocolName: crisis.protocolName ?? null,
-				cycleCount: crisis.cycleCount ?? null,
-				efficiency: crisis.efficiency ?? null,
-				averageCycleTime: crisis.averageCycleTime ?? null
+				note: crisis.note,
+				protocolId: crisis.protocolId,
+				protocolName: crisis.protocolName,
+				cycleCount: crisis.cycleCount,
+				efficiency: crisis.efficiency,
+				averageCycleTime: crisis.averageCycleTime
 			}
 		});
 	}
 
-	async delete(crisisId: string): Promise<void> {
+	async delete(crisis: CrisisDTO): Promise<void> {
 		await this.prisma.crisis.delete({
 			where: {
-				id: crisisId
+				userId_datetime: {
+					userId: crisis.userId,
+					datetime: crisis.datetime
+				}
 			}
 		});
 	}

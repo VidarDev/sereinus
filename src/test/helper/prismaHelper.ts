@@ -37,19 +37,17 @@ export const setupTestDatabase = async () => {
 	await prisma.crisis.createMany({
 		data: [
 			{
-				id: "crisis-1",
 				userId: "1",
 				datetime: new Date(2025, 0, 1, 0, 0, 0),
 				duration: 45,
 				note: "First crisis",
-				protocolId: null,
-				protocolName: null,
-				cycleCount: null,
-				efficiency: null,
-				averageCycleTime: null
+				protocolId: "protocol-1",
+				protocolName: "protocol",
+				cycleCount: 3,
+				efficiency: 2.3,
+				averageCycleTime: 3.3
 			},
 			{
-				id: "crisis-2",
 				userId: "1",
 				duration: 45,
 				datetime: new Date(2025, 0, 2, 0, 0, 0),
@@ -59,18 +57,6 @@ export const setupTestDatabase = async () => {
 				cycleCount: null,
 				efficiency: null,
 				averageCycleTime: null
-			},
-			{
-				id: "breathing-session-1",
-				userId: "1",
-				datetime: new Date(2025, 0, 3, 0, 0, 0),
-				duration: 300,
-				note: "Session de respiration test",
-				protocolId: "box-breathing",
-				protocolName: "Box Breathing",
-				cycleCount: 10,
-				efficiency: 85.5,
-				averageCycleTime: 30000
 			}
 		]
 	});

@@ -1,26 +1,23 @@
 import { CrisisRepository } from "@/main/application/port/Crisis.repository.interface";
+import { Presenter } from "@/main/application/port/Presenter.interface";
+import { Crisis } from "@/main/domain/Crisis";
 
 export class DeleteCrisis<T> {
 	private readonly crisisRepository: CrisisRepository;
+	private readonly crisisPresenter: Presenter<null, T>;
 
-	constructor(crisisRepository: CrisisRepository) {
+	constructor(crisisRepository: CrisisRepository, crisisPresenter: Presenter<null, T>) {
 		this.crisisRepository = crisisRepository;
+		this.crisisPresenter = crisisPresenter;
 	}
 
-	public execute = async (userId: string, crisisId: string): Promise<T> => {
+	public execute = async (userId: string, crisis: Crisis): Promise<T> => {
 		try {
-			const existingCrises = await this.crisisRepository.findAllByUserId(userId);
-			const crisisExists = existingCrises.some((crisis) => crisis.id === crisisId);
+			await this.crisisRepository.delete(userId, crisis);
 
-			if (!crisisExists) {
-				return "Crise non trouvée" as T;
-			}
-
-			await this.crisisRepository.delete(userId, crisisId);
-			return true as T;
+			return this.crisisPresenter.ok();
 		} catch (error) {
-			console.error("Error in DeleteCrisis use case:", error);
-			return "Une erreur est survenue lors de la suppression de la crise." as T;
+			return this.crisisPresenter.error((error as Error).message);
 		}
 	};
 }

@@ -1,24 +1,23 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Crisis {
-  id               String   @id @default(cuid())
-  userId           String
-  datetime         DateTime
-  duration         Int
-  note             String?
-  protocolId       String?
-  protocolName     String?
-  cycleCount       Int?
-  efficiency       Float?
-  averageCycleTime Float?
+    userId           String
+    datetime         DateTime
+    duration         Int
+    note             String?
+    protocolId       String?
+    protocolName     String?
+    cycleCount       Int?
+    efficiency       Float?
+    averageCycleTime Float?
 
-  @@index([userId, datetime])
+    @@id([userId, datetime])
 }
